@@ -23,6 +23,8 @@ from .htsat import create_htsat_model
 from transformers import BertModel, RobertaModel, BartModel
 from transformers.tokenization_utils_base import BatchEncoding
 
+from .custom_roberta import CustomRobertaModel
+
 
 class MLPLayers(nn.Module):
     def __init__(self, units=[512, 512, 512], nonlin=nn.ReLU(), dropout=0.1):
@@ -503,7 +505,8 @@ class CLAP(nn.Module):
                 nn.Linear(self.joint_embed_shape, self.joint_embed_shape)
             )
         elif text_cfg.model_type == "roberta":
-            self.text_branch = RobertaModel.from_pretrained('roberta-base')
+            # self.text_branch = RobertaModel.from_pretrained('roberta-base')
+            self.text_branch = CustomRobertaModel.from_pretrained('roberta-base')
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)
@@ -600,6 +603,7 @@ class CLAP(nn.Module):
     #     return tmp
 
     def encode_text(self, text, device):
+        print(text["attention_mask"])
         if self.text_branch_type == "transformer":
             text = text.to(device=device, non_blocking=True)
             x = self.token_embedding(text)  # [batch_size, n_ctx, d_model]

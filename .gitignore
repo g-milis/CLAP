@@ -162,3 +162,7 @@ src/dev.py
 ESC.csv
 .gitignore
 UrbanSound8K.csv
+
+
+*.wav
+!roberta_test.pt
