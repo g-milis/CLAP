@@ -603,7 +603,6 @@ class CLAP(nn.Module):
     #     return tmp
 
     def encode_text(self, text, device):
-        print(text["attention_mask"])
         if self.text_branch_type == "transformer":
             text = text.to(device=device, non_blocking=True)
             x = self.token_embedding(text)  # [batch_size, n_ctx, d_model]

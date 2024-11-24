@@ -14,28 +14,23 @@ from transformers.models.roberta.modeling_roberta import (
     RobertaPooler, RobertaPreTrainedModel,
     _CHECKPOINT_FOR_DOC, 
     _CONFIG_FOR_DOC,
-    _TOKENIZER_FOR_DOC,
     ROBERTA_INPUTS_DOCSTRING
 )
 from transformers.utils import add_code_sample_docstrings, add_start_docstrings_to_model_forward
 
 
 class CustomRobertaEncoder(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, reweighting_level):
         super().__init__()
         self.config = config
         self.layer = nn.ModuleList([RobertaLayer(config) for _ in range(config.num_hidden_layers)])
         self.gradient_checkpointing = False
-
-        # NOTE: added this
-        # Ideally we would want config.context_length, but the encoder doesn't know that
-        # TODO: I temporarily hardcode this
-        # Initialize at 0 so that exp(0) = 1
-        self.log_reweighting = nn.Parameter(torch.zeros(77, dtype=torch.float))
+        self.reweighting_level = reweighting_level
 
     def forward(
         self,
         hidden_states: torch.Tensor,
+        log_reweighting = None,
         attention_mask: Optional[torch.FloatTensor] = None,
         head_mask: Optional[torch.FloatTensor] = None,
         encoder_hidden_states: Optional[torch.FloatTensor] = None,
@@ -65,9 +60,11 @@ class CustomRobertaEncoder(nn.Module):
             # current_attention_mask will be the same as attention_mask for the first few layers,
             # then it will be the self.log_reweighting for all subsequent layers
 
-            current_attention_mask = attention_mask * torch.exp(self.log_reweighting)
+            if i >= self.reweighting_level:
+                current_attention_mask = attention_mask * torch.exp(log_reweighting)
+            else:
+                current_attention_mask = attention_mask 
 
-            # assert torch.all(current_attention_mask == attention_mask_old)
 
             if self.gradient_checkpointing and self.training:
 
@@ -149,7 +146,6 @@ class CustomRobertaModel(RobertaPreTrainedModel):
     .. _*Attention is all you need*: https://arxiv.org/abs/1706.03762
 
     """
-
     _keys_to_ignore_on_load_missing = [r"position_ids"]
 
     # Copied from transformers.models.bert.modeling_bert.BertModel.__init__ with Bert->Roberta
@@ -158,9 +154,13 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         self.config = config
 
         self.embeddings = RobertaEmbeddings(config)
-        self.encoder = CustomRobertaEncoder(config)
+        self.encoder = CustomRobertaEncoder(config, reweighting_level=7)
 
         self.pooler = RobertaPooler(config) if add_pooling_layer else None
+
+        # NOTE: added this
+        # We have one weight per token, initialized at 0 so that exp(0) = 1
+        self.log_reweighting = nn.Parameter(torch.zeros(config.vocab_size, dtype=torch.float))
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -181,7 +181,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
 
     @add_start_docstrings_to_model_forward(ROBERTA_INPUTS_DOCSTRING.format("batch_size, sequence_length"))
     @add_code_sample_docstrings(
-        processor_class=_TOKENIZER_FOR_DOC,
+        processor_class="RobertaTokenizer",
         checkpoint=_CHECKPOINT_FOR_DOC,
         output_type=BaseModelOutputWithPoolingAndCrossAttentions,
         config_class=_CONFIG_FOR_DOC,
@@ -282,6 +282,13 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         # and head_mask is converted to shape [num_hidden_layers x batch x num_heads x seq_length x seq_length]
         head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
 
+
+        # NOTE: added this
+        # Find the weights from the token indices and convert to [batch_size, 1, 1, seq_length]
+        log_reweighting = self.log_reweighting[input_ids]
+        log_reweighting = log_reweighting[:, None, None, :]
+
+
         embedding_output = self.embeddings(
             input_ids=input_ids,
             position_ids=position_ids,
@@ -291,6 +298,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         )
         encoder_outputs = self.encoder(
             embedding_output,
+            log_reweighting=log_reweighting,
             attention_mask=extended_attention_mask,
             head_mask=head_mask,
             encoder_hidden_states=encoder_hidden_states,
