@@ -16,10 +16,6 @@ mkdir -p $download_dir
 # wget -O $download_dir/clotho_captions_evaluation.csv $captions_eval_url
 
 
-# Create extraction directories
-mkdir -p $download_dir/development_audio
-mkdir -p $download_dir/evaluation_audio
-
 # Extract .7z files
-py7zr x $download_dir/clotho_audio_development.7z $download_dir/development_audio
-py7zr x $download_dir/clotho_audio_evaluation.7z $download_dir/evaluation_audio
+py7zr x $download_dir/clotho_audio_development.7z $download_dir
+py7zr x $download_dir/clotho_audio_evaluation.7z $download_dir
