@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 # Use with all three splits
 splits = ["train", "val", "test"]
 
-splits = ["test"]
+splits = ["train"]
 
 for split in splits:
     # Load dataset
@@ -20,7 +20,7 @@ for split in splits:
     os.makedirs(audio_dir, exist_ok=True)
 
     # YouTube Data API setup
-    API_KEY = "AIzaSyBQOW1PGJXkD7Vj1j5IliIHI77qonLU2PU"  # Replace with your actual API key
+    API_KEY = "AIzaSyCE_6vZUi96EVubwDX5YJVmKAFvnJChUHM"  # Replace with your actual API key
     youtube = build("youtube", "v3", developerKey=API_KEY)
 
     def get_video_url(youtube_id):

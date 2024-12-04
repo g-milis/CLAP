@@ -314,10 +314,11 @@ def main():
         args.wd_pretrained = 0
         args.wd_new = 0
 
-    if args.train_data is None:
-        optimizer = None
-        scheduler = None
-    else:
+    # if args.train_data is None:
+    #     optimizer = None
+    #     scheduler = None
+    # else:
+    if True:
         total_steps = data["train"].dataloader.num_batches * args.epochs
 
         if args.split_opt:
@@ -439,13 +440,14 @@ def main():
                     "module"
                 ):
                     sd = {k[len("module.") :]: v for k, v in sd.items()}
-                model.load_state_dict(sd)
+                model.load_state_dict(sd, strict=False)
                 if args.split_opt:
                     if optimizer is not None:
                         for k, o_ in optimizer.items():
                             o_.load_state_dict(checkpoint[k + "_" + "optimizer"])
-                if optimizer is not None:
-                    optimizer.load_state_dict(checkpoint["optimizer"])
+                # NOTE: modification
+                # if optimizer is not None:
+                #     optimizer.load_state_dict(checkpoint["optimizer"])
                 if scaler is not None and "scaler" in checkpoint:
                     scaler.load_state_dict(checkpoint["scaler"])
                 logging.info(
@@ -453,10 +455,22 @@ def main():
                 )
             else:
                 # loading a bare (model only) checkpoint for fine-tune or evaluation
-                model.load_state_dict(checkpoint)
+                model.load_state_dict(checkpoint, strict=False)
                 logging.info(
                     f"=> loaded checkpoint '{args.resume}' (epoch {start_epoch})"
                 )
+
+            # NOTE: added this to freeze the CLAP model except the reweighting
+            for name, module in model.named_parameters():
+                if "reweighting" in name:
+                    print("Activating gradients for", name)
+                    module.requires_grad_(True)
+                else: 
+                    module.requires_grad_(False)
+
+            trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+            logging.info(f"Trainable params: {trainable_params}")
+
             if args.freeze_text:
                 print("Freeze Text!!!!")
                 for k in text_freeze_parameters:
@@ -507,6 +521,7 @@ def main():
 
     #  print(f'rank {args.rank}, Start Training') #  (yusong): for debug
     for epoch in range(start_epoch, args.epochs):
+        print(model.text_branch.device)
         # freeze the text param after (include) args.freeze_text_after, this is -1 by default
         if epoch == args.freeze_text_after:
             print("Text pretrained parameters are freezed since this epoch.")

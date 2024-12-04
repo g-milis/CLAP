@@ -31,6 +31,8 @@ from transformers import BertTokenizer
 from transformers import RobertaTokenizer
 from transformers import BartTokenizer
 
+from .my_dataloader import AudioDataset
+
 try:
     import horovod.torch as hvd
 except ImportError:
@@ -838,13 +840,41 @@ def get_toy_dataset(args, model_cfg, is_train):
     return DataInfo(dataloader, sampler)
 
 
+def my_get_dataset(args, model_cfg, is_train):
+    dataset = AudioDataset(
+        csv_file="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/train.csv",
+        audio_dir="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/audio_files/train",
+        # mel_spec_params={"sample_rate": 16000, "n_fft": 1024, "hop_length": 512, "n_mels": 64}
+    )
+
+    num_samples = len(dataset)
+    sampler = (
+        DistributedSampler(dataset, shuffle=False)
+        if args.distributed and is_train
+        else None
+    )
+
+    dataloader = DataLoader(
+        dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.workers,
+        sampler=sampler,
+        drop_last=is_train,
+    )
+    dataloader.num_samples = num_samples
+    dataloader.num_batches = len(dataloader)
+
+    return DataInfo(dataloader, sampler)
+
+
 def get_dataset_fn(dataset_type):
     if dataset_type == "webdataset":
         return get_wds_dataset
     elif dataset_type == "toy":
         return get_toy_dataset
     else:
-        raise ValueError(f"Unsupported dataset type: {dataset_type}")
+        return my_get_dataset
 
 
 def get_data(args, model_cfg):
@@ -891,5 +921,9 @@ def get_data(args, model_cfg):
         data["val"] = get_dataset_fn(args.dataset_type)(
             args, model_cfg, is_train=False
         )
+
+    data["train"] = get_dataset_fn("place3holder")(
+        args, model_cfg, is_train=True
+    )
 
     return data

@@ -9,11 +9,11 @@ download_dir='data/clotho_dataset'
 mkdir -p data
 mkdir -p $download_dir
 
-# # Download files using wget
-# wget -O $download_dir/clotho_audio_development.7z $audio_dev_url
-# wget -O $download_dir/clotho_captions_development.csv $captions_dev_url
-# wget -O $download_dir/clotho_audio_evaluation.7z $audio_eval_url
-# wget -O $download_dir/clotho_captions_evaluation.csv $captions_eval_url
+# Download files using wget
+wget -O $download_dir/clotho_audio_development.7z $audio_dev_url
+wget -O $download_dir/clotho_captions_development.csv $captions_dev_url
+wget -O $download_dir/clotho_audio_evaluation.7z $audio_eval_url
+wget -O $download_dir/clotho_captions_evaluation.csv $captions_eval_url
 
 
 # Extract .7z files

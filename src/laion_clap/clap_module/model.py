@@ -20,7 +20,7 @@ from .utils import freeze_batch_norm_2d
 
 from .pann_model import create_pann_model
 from .htsat import create_htsat_model
-from transformers import BertModel, RobertaModel, BartModel
+from transformers import BertModel, RobertaModel, BartModel, RobertaTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from .custom_roberta import CustomRobertaModel
@@ -547,9 +547,21 @@ class CLAP(nn.Module):
 
         self.logit_scale_a = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
         self.logit_scale_t = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+        
+        self.tokenize = RobertaTokenizer.from_pretrained('roberta-base')
         self.register_buffer("attn_mask", self.build_attention_mask(), persistent=False)
 
         self.init_text_branch_parameters()
+
+    def tokenizer(self, text):
+        result = self.tokenize(
+            text,
+            padding="max_length",
+            truncation=True,
+            max_length=77,
+            return_tensors="pt",
+        )
+        return result
 
     def init_text_branch_parameters(self):
         if self.text_branch_type == "transformer":
@@ -675,8 +687,9 @@ class CLAP(nn.Module):
         audio_features = self.audio_projection(self.encode_audio(audio, device=device)["embedding"])
         audio_features = F.normalize(audio_features, dim=-1)
 
+        tokens = self.tokenizer(text)
         text_features = self.encode_text(
-            text, device=device
+            tokens, device=device
         )
         # print("text_features", text_features)
         # print("text_features.shape", text_features.shape)

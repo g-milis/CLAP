@@ -139,6 +139,7 @@ def create_model(
         model_cfg["text_cfg"]["model_type"] = tmodel_name
         model_cfg["enable_fusion"] = enable_fusion
         model_cfg["fusion_type"] = fusion_type
+        # NOTE: changed this from CLAP
         model = CLAP(**model_cfg)
 
         if pretrained:
