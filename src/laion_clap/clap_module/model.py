@@ -681,6 +681,7 @@ class CLAP(nn.Module):
             # a hack to get the logit scale
             return self.logit_scale_a.exp(), self.logit_scale_t.exp()
         elif audio is None:
+            text = self.tokenizer(text)
             return self.encode_text(text, device=device)
         elif text is None:
             return self.audio_projection(self.encode_audio(audio, device=device)["embedding"])

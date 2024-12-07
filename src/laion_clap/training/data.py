@@ -841,9 +841,12 @@ def get_toy_dataset(args, model_cfg, is_train):
 
 
 def my_get_dataset(args, model_cfg, is_train):
+    if is_train:
+        split = "train"
+    else:
+        split = "val"
     dataset = AudioDataset(
-        csv_file="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/train.csv",
-        audio_dir="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/audio_files/train",
+        split,
         # mel_spec_params={"sample_rate": 16000, "n_fft": 1024, "hop_length": 512, "n_mels": 64}
     )
 
@@ -924,6 +927,9 @@ def get_data(args, model_cfg):
 
     data["train"] = get_dataset_fn("place3holder")(
         args, model_cfg, is_train=True
+    )
+    data["val"] = get_dataset_fn("place3holder")(
+        args, model_cfg, is_train=False
     )
 
     return data

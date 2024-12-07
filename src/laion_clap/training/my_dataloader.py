@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 
 class AudioDataset(Dataset):
-    def __init__(self, csv_file, audio_dir, transform=None, sample_rate=16000, mel_spec_params=None):
+    def __init__(self, split, transform=None, sample_rate=16000, mel_spec_params=None):
         """
         Args:
             csv_file (str): Path to the CSV file with captions and audio file paths.
@@ -17,10 +17,15 @@ class AudioDataset(Dataset):
             sample_rate (int): Target sample rate for audio files.
             mel_spec_params (dict): Parameters for MelSpectrogram, if mel spectrogram is needed.
         """
+        csv_file=f"/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/{split}.csv"
+        audio_dir=f"/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/audio_files/{split}"
+
         self.max_length = 10 * sample_rate
         # Get list of audio files in the directory
         audio_files = [file for file in os.listdir(audio_dir) if file.endswith('.wav')]
         audio_ids = [os.path.basename(name).rsplit("_")[0] for name in audio_files]
+
+        print(len(audio_ids))
         
         # Load and filter the CSV data
         self.data = pd.read_csv(csv_file)
@@ -109,9 +114,9 @@ def collate_fn(batch):
 # Example usage
 if __name__ == "__main__":
     # Define the dataset
+    split = "train"
     dataset = AudioDataset(
-        csv_file="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/train.csv",
-        audio_dir="/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/audio_files/train",
+        split,
         # mel_spec_params={"sample_rate": 16000, "n_fft": 1024, "hop_length": 512, "n_mels": 64}
     )
 

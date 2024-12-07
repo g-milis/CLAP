@@ -277,7 +277,8 @@ def evaluate(model, data, epoch, args, tb_writer=None):
     if is_master(args):
         print('Evaluating...')
     autocast = torch.cuda.amp.autocast if args.precision == "amp" else suppress
-    if args.val_dataset_names == ['Clotho', 'audiocaps']:
+    # if args.val_dataset_names == ['Clotho', 'audiocaps']:
+    if True:
         # if only clotho and audiocaps are used, then we will use a different evaluation function.
         # This is because in the Clotho and audiocaps valid and test set, there are 5 text for 1 audio.
         if args.parallel_eval:
@@ -323,7 +324,8 @@ def evaluate(model, data, epoch, args, tb_writer=None):
                 texts = batch['text']
                 # audios = audios.to(device=device, non_blocking=True)
 
-                all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
+                # all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
+                all_names = list(set([b for b in batch['audio_name']]))
                 for name in all_names:
                     if name not in eval_info.keys():
                         if args.clap_mlploss:
@@ -601,15 +603,17 @@ def evaluate_clotho_audiocaps(
                 texts = [tokenize(t) for t in batch['full_text']]
                 texts = torch.cat(texts)
             else:
-                from .data import tokenizer
-                texts = [tokenizer(t, tmodel=args.tmodel) for t in batch['full_text']]  # 5 texts for each audio
-                texts = {k: torch.cat([t[k] for t in texts]) for k in texts[0].keys()}  # 5 x batch
+                texts = batch['text']
+                # from .data import tokenizer
+                # texts = [tokenizer(t, tmodel=args.tmodel) for t in batch['text']]  # 5 texts for each audio
+                # texts = {k: torch.cat([t[k] for t in texts]) for k in texts[0].keys()}  # 5 x batch
 
             # audios = audios.to(device=device, non_blocking=True)
 
             # batch['__url__'] contains the path to the data tar this sample is from
             # So, b.split("/")[-3:-1] will get you '<dataset_name>-<dataset-split>'
-            all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
+            # all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
+            all_names = ["audiocaps-train"]
             for name in all_names:
                 if name not in eval_info.keys():
                     # we will not use mlp outputs even if args.clap_mlploss=True
@@ -625,27 +629,38 @@ def evaluate_clotho_audiocaps(
                 audio_features = F.normalize(audio_features, dim=-1)
                 text_features = F.normalize(text_features, dim=-1)
 
-                all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
+                # print(audio_features.shape)
+                # print(text_features.shape)
+
+                # all_names = list(set(["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]))
                 for n in all_names:
-                    idx = np.where(
-                        np.array(
-                            ["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]
-                        )
-                        == n
-                    )[0]
+                    # idx = np.where(
+                    #     np.array(
+                    #         ["-".join(b.split("/")[-3:-1]) for b in batch['__url__']]
+                    #     )
+                    #     == n
+                    # )[0]
+                    idx = batch["index_in_hdf5"]
                     eval_info[n]["all_audio_features"].append(
-                        audio_features.cpu().index_select(
-                            0, torch.tensor(idx).long()
-                        )
+                        audio_features.cpu()#.index_select(
+                        #     0, torch.tensor(idx).long()
+                        # )
                     )
                     # (yusong) please double-check. This is for selecting 5 text features at once.
                     # because idx is a list of indices in size of num_samples,
                     # and text_features is a tensor of size (5*num_samples, dim)
                     # so we need to select 5 consecutive indices at once for a single index in idx.
+
+                    # NOTE: removed the 5 captions thing
+                    # eval_info[n]["all_text_features"].append(
+                    #     text_features.cpu().reshape([-1, 5, text_features.shape[1]]).index_select(
+                    #         0, torch.tensor(idx).long()
+                    #     ).reshape([-1, text_features.shape[1]])
+                    # )
                     eval_info[n]["all_text_features"].append(
-                        text_features.cpu().reshape([-1, 5, text_features.shape[1]]).index_select(
-                            0, torch.tensor(idx).long()
-                        ).reshape([-1, text_features.shape[1]])
+                        text_features.cpu()#.index_select(
+                        #     0, torch.tensor(idx).long()
+                        # )
                     )
 
         val_metrics_all = {}
@@ -677,11 +692,13 @@ def evaluate_clotho_audiocaps(
             labels = torch.arange(audio_features.shape[0]).long()
             audio_to_text_loss = [
                 F.cross_entropy(
-                    logits_per_audio.reshape(num_samples, num_samples, 5)[:, :, d], labels) for d in range(5)
+                    logits_per_audio,#.reshape(num_samples, num_samples, 5)[:, :, d], 
+                    labels) #for d in range(5)
             ]
             text_to_audio_loss = [
                 F.cross_entropy(
-                    logits_per_text.reshape(num_samples, 5, num_samples)[:, d, :], labels) for d in range(5)
+                    logits_per_text,#.reshape(num_samples, 5, num_samples)[:, d, :], 
+                    labels)# for d in range(5)
             ]
             total_loss = (
                                  np.mean(audio_to_text_loss) + np.mean(text_to_audio_loss)
@@ -689,14 +706,22 @@ def evaluate_clotho_audiocaps(
 
             metrics[f"cumulative_loss"] = total_loss.item()
 
+            # NOTE: 1 time
             # text to audio: do 5 times
-            pred_text = []
-            for d in range(5):
-                logit = logits_per_text.reshape(num_samples, 5, num_samples)[:, d, :]
-                ground_truth = torch.arange(len(logit)).view(-1, 1)
-                ranking = torch.argsort(logit, descending=True)  # [num_samples, num_samples]
-                preds = torch.where(ranking == ground_truth)[1]
-                pred_text.append(preds.detach().cpu().numpy())
+            # pred_text = []
+            # for d in range(5):
+            #     logit = logits_per_text.reshape(num_samples, 5, num_samples)[:, d, :]
+            #     ground_truth = torch.arange(len(logit)).view(-1, 1)
+            #     ranking = torch.argsort(logit, descending=True)  # [num_samples, num_samples]
+            #     preds = torch.where(ranking == ground_truth)[1]
+            #     pred_text.append(preds.detach().cpu().numpy())
+
+            logit = logits_per_text
+            ground_truth = torch.arange(len(logit)).view(-1, 1)
+            ranking = torch.argsort(logit, descending=True)  # [num_samples, num_samples]
+            preds = torch.where(ranking == ground_truth)[1]
+            pred_text = [preds.detach().cpu().numpy()]
+
             pred_text_concat = np.concatenate(pred_text, axis=0)  # [5*num_samples]
             metrics[f"text_to_audio_mean_rank"] = pred_text_concat.mean() + 1
             metrics[f"text_to_audio_median_rank"] = np.floor(np.median(pred_text_concat)) + 1
@@ -709,25 +734,26 @@ def evaluate_clotho_audiocaps(
             # for audio to text map 10, sort and assign descending ground truth.
             # see https://github.com/XinhaoMei/audio-text_retrieval/blob/main/tools/utils.py#L103
             # map@10
-            map_all = []
-            pred_audio_all = []
-            for d in range(num_samples):
-                # logits_per_audio: [num_samples, num_samples*5]
-                logit_single = logits_per_audio[d, :]  # [5*num_samples]
-                # Ground-truth index: [d*5, d*5+1, d*5+2, d*5+3, d*5+4]
-                ranking = torch.argsort(logit_single, descending=True)  # [5*num_samples]
-                # ranking: the index of first match, second match, ...
-                ground_truth = torch.arange(d * 5, d * 5 + 5)[None]
-                all_pred = torch.where(torch.stack([ranking] * 5) == ground_truth.view(-1, 1))[1]
-                min_pred = torch.min(all_pred)
-                pred_audio_all.append(min_pred.detach().cpu().numpy())
-                all_pred_filter = all_pred[all_pred < 10].detach().cpu().numpy()
-                # /5 because we have 5 text, so it means for the text rank >=10 we count as 0.
-                map_single = np.sum((np.arange(1, len(all_pred_filter) + 1) / (all_pred_filter + 1))) / 5
-                map_all.append(map_single)
-            metrics[f"audio_to_text_mAP@10"] = np.mean(map_all)
-            for k in [1, 5, 10]:
-                metrics[f"audio_to_text_R@{k}"] = np.mean(np.array(pred_audio_all) < k)
+            # NOTE: removed
+            # map_all = []
+            # pred_audio_all = []
+            # for d in range(num_samples):
+            #     # logits_per_audio: [num_samples, num_samples*5]
+            #     logit_single = logits_per_audio[d, :]  # [5*num_samples]
+            #     # Ground-truth index: [d*5, d*5+1, d*5+2, d*5+3, d*5+4]
+            #     ranking = torch.argsort(logit_single, descending=True)  # [5*num_samples]
+            #     # ranking: the index of first match, second match, ...
+            #     ground_truth = torch.arange(d * 5, d * 5 + 5)[None]
+            #     all_pred = torch.where(torch.stack([ranking] * 5) == ground_truth.view(-1, 1))[1]
+            #     min_pred = torch.min(all_pred)
+            #     pred_audio_all.append(min_pred.detach().cpu().numpy())
+            #     all_pred_filter = all_pred[all_pred < 10].detach().cpu().numpy()
+            #     # /5 because we have 5 text, so it means for the text rank >=10 we count as 0.
+            #     map_single = np.sum((np.arange(1, len(all_pred_filter) + 1) / (all_pred_filter + 1))) / 5
+            #     map_all.append(map_single)
+            # metrics[f"audio_to_text_mAP@10"] = np.mean(map_all)
+            # for k in [1, 5, 10]:
+            #     metrics[f"audio_to_text_R@{k}"] = np.mean(np.array(pred_audio_all) < k)
 
             val_metrics_all[n] = {
                 n + "/" + k: v for k, v in metrics.items()
@@ -741,8 +767,9 @@ def calculate_selection_performance_clotho_audiocaps(val_metrics_per_dataset):
     """
     selection_performance_all = []
     for n in val_metrics_per_dataset.keys():
-        selection_performance = (val_metrics_per_dataset[n][f"{n}/audio_to_text_mAP@10"] +
-                                 val_metrics_per_dataset[n][f"{n}/text_to_audio_mAP@10"]) / 2
+        # selection_performance = (val_metrics_per_dataset[n][f"{n}/audio_to_text_mAP@10"] +
+        #                          val_metrics_per_dataset[n][f"{n}/text_to_audio_mAP@10"]) / 2
+        selection_performance = val_metrics_per_dataset[n][f"{n}/text_to_audio_mAP@10"]
         selection_performance_all.append(selection_performance)
     return np.mean(selection_performance_all)
 
