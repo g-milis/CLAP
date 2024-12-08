@@ -111,19 +111,22 @@ class CLAP_Module(torch.nn.Module):
                 print('Download completed!')
         print('Load Checkpoint...')
         ckpt = load_state_dict(ckpt, skip_params=True)
-        self.model.load_state_dict(ckpt, strict=False)
+        print([key for key in ckpt.keys() if "reweighting" in key])
+        print("Loading state dict to model (2)")
+        self.model.load_state_dict(ckpt)#, strict=False)
+        print("Loaded state dict to model strictly (3)")
         if verbose:
             param_names = [n for n, p in self.model.named_parameters()]
             for n in param_names:
                 print(n, "\t", "Loaded" if n in ckpt else "Unloaded")
 
         # NOTE: added this to freeze the CLAP model except the reweighting
-        for name, module in self.model.named_parameters():
-            if "reweighting" in name:
-                print("Activating gradients for", name)
-                module.requires_grad_(True)
-            else: 
-                module.requires_grad_(False)
+        # for name, module in self.model.named_parameters():
+        #     if "reweighting" in name:
+        #         print("Activating gradients for", name)
+        #         module.requires_grad_(True)
+        #     else: 
+        #         module.requires_grad_(False)
     
     def get_audio_embedding_from_filelist(self, x, use_tensor=False):
         """get audio embeddings from the audio file list

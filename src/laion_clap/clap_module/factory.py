@@ -52,6 +52,7 @@ _rescan_model_configs()  # initial populate of model config registry
 
 def load_state_dict(checkpoint_path: str, map_location="cpu", skip_params=True):
     checkpoint = torch.load(checkpoint_path, map_location=map_location)
+    print("Loaded state dict to memory (1)")
     if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
         state_dict = checkpoint["state_dict"]
     else:
@@ -139,7 +140,7 @@ def create_model(
         model_cfg["text_cfg"]["model_type"] = tmodel_name
         model_cfg["enable_fusion"] = enable_fusion
         model_cfg["fusion_type"] = fusion_type
-        # NOTE: changed this from CLAP
+        print("Initializing empty model here (0)")
         model = CLAP(**model_cfg)
 
         if pretrained:

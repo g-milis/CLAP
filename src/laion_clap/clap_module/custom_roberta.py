@@ -60,10 +60,14 @@ class CustomRobertaEncoder(nn.Module):
             # current_attention_mask will be the same as attention_mask for the first few layers,
             # then it will be the self.log_reweighting for all subsequent layers
 
+            current_attention_mask = attention_mask
+
             if i >= self.reweighting_level:
-                current_attention_mask = attention_mask * torch.exp(log_reweighting)
+                #current_attention_mask = attention_mask * torch.exp(log_reweighting)
+                hidden_states *= torch.exp(log_reweighting)
             else:
-                current_attention_mask = attention_mask 
+                pass
+                #current_attention_mask = attention_mask 
 
 
             if self.gradient_checkpointing and self.training:
@@ -286,8 +290,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         # NOTE: added this
         # Find the weights from the token indices and convert to [batch_size, 1, 1, seq_length]
         log_reweighting = self.log_reweighting[input_ids]
-        log_reweighting = log_reweighting[:, None, None, :]
-
+        log_reweighting = log_reweighting[..., None]
 
         embedding_output = self.embeddings(
             input_ids=input_ids,
