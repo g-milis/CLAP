@@ -71,7 +71,7 @@ class CLAP_Module(torch.nn.Module):
         )
         return result
 
-    def load_ckpt(self, ckpt = None, model_id = -1, verbose = False):
+    def load_ckpt(self, ckpt=None, model_id=-1, verbose=False, strict=True):
         """Load the pretrained checkpoint of CLAP model
 
         Parameters
@@ -113,7 +113,7 @@ class CLAP_Module(torch.nn.Module):
         ckpt = load_state_dict(ckpt, skip_params=True)
         print([key for key in ckpt.keys() if "reweighting" in key])
         print("Loading state dict to model (2)")
-        self.model.load_state_dict(ckpt)#, strict=False)
+        self.model.load_state_dict(ckpt, strict=strict)
         print("Loaded state dict to model strictly (3)")
         if verbose:
             param_names = [n for n, p in self.model.named_parameters()]
