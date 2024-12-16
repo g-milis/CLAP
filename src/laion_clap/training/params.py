@@ -555,6 +555,11 @@ def parse_args():
         default=None,
         help="The prefetch factor for dataloader. Larger value will use more memory and CPU but faster.",
     )
+    parser.add_argument(
+        "--reweighting_level",
+        type=int,
+        default=7
+    )
 
     args = parser.parse_args()
 

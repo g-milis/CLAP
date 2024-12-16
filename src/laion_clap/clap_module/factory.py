@@ -72,6 +72,7 @@ def load_state_dict(checkpoint_path: str, map_location="cpu", skip_params=True):
 
 
 def create_model(
+    reweighting_level: int,
     amodel_name: str,
     tmodel_name: str,
     pretrained: str = "",
@@ -140,6 +141,7 @@ def create_model(
         model_cfg["text_cfg"]["model_type"] = tmodel_name
         model_cfg["enable_fusion"] = enable_fusion
         model_cfg["fusion_type"] = fusion_type
+        model_cfg["reweighting_level"] = reweighting_level
         print("Initializing empty model here (0)")
         model = CLAP(**model_cfg)
 

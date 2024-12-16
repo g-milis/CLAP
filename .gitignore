@@ -166,3 +166,10 @@ UrbanSound8K.csv
 
 *.wav
 !roberta_test.pt
+
+data/clotho_dataset/train
+data/clotho_dataset/valid
+data/clotho_dataset/test
+
+AudioCaps_CVSSP
+ACT

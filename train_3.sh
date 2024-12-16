@@ -24,6 +24,6 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --data-truncating "rand_trunc" \
         --prefetch-factor 2 \
         --report-to "wandb" \
-        --name reweighting_7_1e3_acaps_clotho \
-        --wandb-notes "reweighting_7_1e3_acaps_clotho" \
-        --reweighting_level 7
+        --name reweighting_9_1e3_acaps_clotho \
+        --wandb-notes "reweighting_9_1e3_acaps_clotho" \
+        --reweighting_level 9

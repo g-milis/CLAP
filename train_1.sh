@@ -6,7 +6,7 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --datasetpath="data/audiocaps/audio_files/train" \
         --precision="fp32" \
         --batch-size=96 \
-        --lr=1e-3 \
+        --lr=1e-4 \
         --wd=0.0 \
         --epochs=20 \
         --use-bn-sync \
@@ -24,6 +24,6 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --data-truncating "rand_trunc" \
         --prefetch-factor 2 \
         --report-to "wandb" \
-        --name reweighting_7_1e3_acaps_clotho \
-        --wandb-notes "reweighting_7_1e3_acaps_clotho" \
+        --name reweighting_7_1e4_acaps_clotho \
+        --wandb-notes "reweighting_7_1e4_acaps_clotho" \
         --reweighting_level 7

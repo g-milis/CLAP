@@ -230,6 +230,7 @@ def main():
     logging.info(f"openai cache dir: {os.path.expanduser(args.openai_model_cache_dir)}")
 
     model, model_cfg = create_model(
+        args.reweighting_level,
         args.amodel,
         args.tmodel,
         args.pretrained,

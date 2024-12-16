@@ -20,16 +20,16 @@ from transformers.utils import add_code_sample_docstrings, add_start_docstrings_
 
 
 class CustomRobertaEncoder(nn.Module):
-    def __init__(self, config, reweighting_level):
+    def __init__(self, config, reweighting_level=7):
         super().__init__()
         self.config = config
         self.layer = nn.ModuleList([RobertaLayer(config) for _ in range(config.num_hidden_layers)])
         self.gradient_checkpointing = False
-        self.reweighting_level = reweighting_level
 
     def forward(
         self,
         hidden_states: torch.Tensor,
+        reweighting_level: int,
         log_reweighting = None,
         attention_mask: Optional[torch.FloatTensor] = None,
         head_mask: Optional[torch.FloatTensor] = None,
@@ -62,13 +62,12 @@ class CustomRobertaEncoder(nn.Module):
 
             current_attention_mask = attention_mask
 
-            if i >= self.reweighting_level:
+            if i >= reweighting_level:
                 #current_attention_mask = attention_mask * torch.exp(log_reweighting)
                 hidden_states *= torch.exp(log_reweighting)
             else:
                 pass
                 #current_attention_mask = attention_mask 
-
 
             if self.gradient_checkpointing and self.training:
 
@@ -158,7 +157,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         self.config = config
 
         self.embeddings = RobertaEmbeddings(config)
-        self.encoder = CustomRobertaEncoder(config, reweighting_level=7)
+        self.encoder = CustomRobertaEncoder(config)
 
         self.pooler = RobertaPooler(config) if add_pooling_layer else None
 
@@ -193,6 +192,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
     # Copied from transformers.models.bert.modeling_bert.BertModel.forward
     def forward(
         self,
+        reweighting_level: int,
         input_ids: Optional[torch.Tensor] = None,
         attention_mask: Optional[torch.Tensor] = None,
         token_type_ids: Optional[torch.Tensor] = None,
@@ -301,6 +301,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         )
         encoder_outputs = self.encoder(
             embedding_output,
+            reweighting_level=reweighting_level,
             log_reweighting=log_reweighting,
             attention_mask=extended_attention_mask,
             head_mask=head_mask,

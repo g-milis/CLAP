@@ -18,7 +18,7 @@ from clap_module.factory import load_state_dict
 
 
 class CLAP_Module(torch.nn.Module):
-    def __init__(self, enable_fusion=False, device=None, amodel= 'HTSAT-tiny', tmodel='roberta') -> None:
+    def __init__(self, reweighting_level=7, enable_fusion=False, device=None, amodel= 'HTSAT-tiny', tmodel='roberta') -> None:
         """Initialize CLAP Model
 
         Parameters
@@ -41,6 +41,7 @@ class CLAP_Module(torch.nn.Module):
         if enable_fusion:
             fusion_type = 'aff_2d'
             model, model_cfg = create_model(
+                reweighting_level,
                 amodel,
                 tmodel,
                 precision=precision,
@@ -50,6 +51,7 @@ class CLAP_Module(torch.nn.Module):
             )
         else:
             model, model_cfg = create_model(
+                reweighting_level,
                 amodel,
                 tmodel,
                 precision=precision,
@@ -111,6 +113,7 @@ class CLAP_Module(torch.nn.Module):
                 print('Download completed!')
         print('Load Checkpoint...')
         ckpt = load_state_dict(ckpt, skip_params=True)
+        print("Reweighting modules:")
         print([key for key in ckpt.keys() if "reweighting" in key])
         print("Loading state dict to model (2)")
         self.model.load_state_dict(ckpt, strict=strict)

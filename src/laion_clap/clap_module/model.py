@@ -419,6 +419,7 @@ class CLAPTextCfg:
     heads: int
     layers: int
     model_type: str
+    reweighting_level: int = 7
 
 
 class CLAP(nn.Module):
@@ -427,6 +428,7 @@ class CLAP(nn.Module):
         embed_dim: int,
         audio_cfg: CLAPAudioCfp,
         text_cfg: CLAPTextCfg,
+        reweighting_level: int,
         quick_gelu: bool = False,
         enable_fusion: bool = False,
         fusion_type: str = 'None',
@@ -446,6 +448,7 @@ class CLAP(nn.Module):
         self.joint_embed_shape = joint_embed_shape
         self.mlp_act = mlp_act
 
+        self.reweighting_level = reweighting_level
 
         self.context_length = text_cfg.context_length
 
@@ -647,6 +650,7 @@ class CLAP(nn.Module):
                 attention_mask=text["attention_mask"].to(
                     device=device, non_blocking=True
                 ),
+                reweighting_level=self.reweighting_level
             )["pooler_output"]
             x = self.text_projection(x)
         elif self.text_branch_type == "bart":
