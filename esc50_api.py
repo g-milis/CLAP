@@ -11,23 +11,34 @@ esc50_test_dir = 'data/ESC50_1/test'
 class_index_dict_path = 'class_labels/ESC50_class_labels_indices_space.json'
 
 models = [
-    "base"
-    "reweighting_5_1e3_acaps_clotho",
-    "reweighting_5_1e4_acaps_clotho",
-    "reweighting_7_1e2_acaps_clotho",
-    "reweighting_7_1e2_acaps_clotho_30",
-    "reweighting_7_1e3_acaps_clotho",
-    "reweighting_7_1e3_acaps_clotho_30",
-    "reweighting_7_1e4_acaps_clotho",
-    "reweighting_9_1e3_acaps_clotho",
-    "reweighting_9_1e4_acaps_clotho",
+    # "base"
+    # "reweighting_5_1e3_acaps_clotho",
+    # "reweighting_5_1e4_acaps_clotho",
+    # "reweighting_7_1e2_acaps_clotho",
+    # "reweighting_7_1e2_acaps_clotho_30",
+    # "reweighting_7_1e3_acaps_clotho",
+    # "reweighting_7_1e3_acaps_clotho_30",
+    # "reweighting_7_1e4_acaps_clotho",
+    # "reweighting_9_1e3_acaps_clotho",
+    # "reweighting_9_1e4_acaps_clotho",
+    "base",
+    "reweighting_0_1e5_acaps_clotho",
+    "reweighting_1_1e5_acaps_clotho",
+    "reweighting_2_1e5_acaps_clotho",
+    "reweighting_3_1e5_acaps_clotho",
+    "reweighting_4_1e5_acaps_clotho",
     "reweighting_5_1e5_acaps_clotho",
+    "reweighting_6_1e5_acaps_clotho",
     "reweighting_7_1e5_acaps_clotho",
+    "reweighting_8_1e5_acaps_clotho",
     "reweighting_9_1e5_acaps_clotho",
+    "reweighting_10_1e5_acaps_clotho",
+    "reweighting_11_1e5_acaps_clotho",
 ]
 
 
 for model_name in models:
+    print("Evaluation for", model_name)
     # Load the model
     model = laion_clap.CLAP_Module(enable_fusion=False, device=device)
     if model_name == "base":

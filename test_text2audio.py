@@ -17,9 +17,19 @@ models = [
     # "reweighting_7_1e4_acaps_clotho",
     # "reweighting_9_1e3_acaps_clotho",
     # "reweighting_9_1e4_acaps_clotho",
+    "base",
+    "reweighting_0_1e5_acaps_clotho",
+    "reweighting_1_1e5_acaps_clotho",
+    "reweighting_2_1e5_acaps_clotho",
+    "reweighting_3_1e5_acaps_clotho",
+    "reweighting_4_1e5_acaps_clotho",
     "reweighting_5_1e5_acaps_clotho",
+    "reweighting_6_1e5_acaps_clotho",
     "reweighting_7_1e5_acaps_clotho",
+    "reweighting_8_1e5_acaps_clotho",
     "reweighting_9_1e5_acaps_clotho",
+    "reweighting_10_1e5_acaps_clotho",
+    "reweighting_11_1e5_acaps_clotho",
 ]
 
 # Ensure CUDA is available
@@ -45,10 +55,12 @@ audio_files_paths = [os.path.join(audio_folder, f) for f in os.listdir(audio_fol
 
 for model_name in models:
     print("Evaluation for", model_name)
-    # Initialize model
+    # Load the model
     model = laion_clap.CLAP_Module(enable_fusion=False, device=device)
-    # model.load_ckpt(f'logs/{model_name}/checkpoints/epoch_latest.pt', strict=False)
-    model.load_ckpt("models/630k-audioset-best.pt", strict=False)
+    if model_name == "base":
+        model.load_ckpt('models/630k-audioset-best.pt', strict=False)
+    else:
+        model.load_ckpt(f'logs/{model_name}/checkpoints/epoch_latest.pt', strict=False)
 
     # Generate embeddings with autocast for compatibility
     with torch.no_grad():
@@ -77,7 +89,7 @@ for model_name in models:
         top_indices = similarity_scores.argsort()[::-1][:10]
         top_matches = [os.path.basename(audio_files_paths[idx]) for idx in top_indices]
 
-        print(similarity_scores.sort()[::-1][:10])
+        #print(sorted(similarity_scores)[::-1][:10])
 
         # Check if ground truth is in the top matches
         ground_truth = ground_truth_audio[i]

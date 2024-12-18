@@ -17,11 +17,20 @@ models = [
     # "reweighting_7_1e4_acaps_clotho",
     # "reweighting_9_1e3_acaps_clotho",
     # "reweighting_9_1e4_acaps_clotho",
+    "base",
+    "reweighting_0_1e5_acaps_clotho",
+    "reweighting_1_1e5_acaps_clotho",
+    "reweighting_2_1e5_acaps_clotho",
+    "reweighting_3_1e5_acaps_clotho",
+    "reweighting_4_1e5_acaps_clotho",
     "reweighting_5_1e5_acaps_clotho",
+    "reweighting_6_1e5_acaps_clotho",
     "reweighting_7_1e5_acaps_clotho",
+    "reweighting_8_1e5_acaps_clotho",
     "reweighting_9_1e5_acaps_clotho",
+    "reweighting_10_1e5_acaps_clotho",
+    "reweighting_11_1e5_acaps_clotho",
 ]
-
 
 # Ensure CUDA is available
 print(f"CUDA Available: {torch.cuda.is_available()}")
@@ -40,26 +49,28 @@ ground_truth_captions = data['ground_truth_caption']
 
 for model_name in models:
     print("Evaluation for", model_name)
-    # Initialize model
+    # Load the model
     model = laion_clap.CLAP_Module(enable_fusion=False, device=device)
-    # model.load_ckpt(f'logs/{model_name}/checkpoints/epoch_latest.pt', strict=False)
-    model.load_ckpt("models/630k-audioset-best.pt", strict=False)
+    if model_name == "base":
+        model.load_ckpt('models/630k-audioset-best.pt', strict=False)
+    else:
+        model.load_ckpt(f'logs/{model_name}/checkpoints/epoch_latest.pt', strict=False)
 
     # Define audio folder
-    audio_folder = "data/audiocaps/audio_files/val"
-    audio_files = [f for f in os.listdir(audio_folder) if f.endswith('.mp3')]
-    print('audio_files')
-    print(audio_files)
+    audio_folder = "data/audiocaps/audio_files/test"
+    audio_files = [f for f in os.listdir(audio_folder) if f.endswith('.wav')]
+    # print('audio_files')
+    # print(audio_files)
 
     full_audio_files_paths = [os.path.join(audio_folder, file_name) for file_name in audio_files]
-    print('full_audio_files_paths')
-    print(full_audio_files_paths)
+    # print('full_audio_files_paths')
+    # print(full_audio_files_paths)
 
-    # Load an example waveform to validate audio files
-    import torchaudio
-    waveform, sample_rate = torchaudio.load(full_audio_files_paths[0])
-    print('waveform.shape')
-    print(waveform.shape)
+    # # Load an example waveform to validate audio files
+    # import torchaudio
+    # waveform, sample_rate = torchaudio.load(full_audio_files_paths[0])
+    # print('waveform.shape')
+    # print(waveform.shape)
 
     # Process captions
     captions = data['caption'].tolist()
@@ -99,7 +110,7 @@ for model_name in models:
         audio_embedding = audio_embed[i].reshape(1, -1)
         similarity_scores = cosine_similarity(audio_embedding.cpu(), text_embed.cpu())[0]
         top_indices = similarity_scores.argsort()[::-1][:3]
-        top_matches = [(captions[idx], similarity_scores[idx]) for idx in top_indices]
+        top_matches = [captions[idx] for idx in top_indices]
 
         # Check if ground truth is in the top matches
         ground_truth = ground_truth_captions[i]
@@ -121,12 +132,18 @@ for model_name in models:
     #         print(f"  {i}. {caption} (Score: {score:.2f})")
 
     # Calculate accuracy
-    top_1_correct = sum(1 for match in audio_to_text_matches if match['ground_truth'] == match['top_matches'][0][0])
-    top_3_correct = sum(1 for match in audio_to_text_matches if match['is_ground_truth_present'])
+    top_1_correct = sum(1 for match in audio_to_text_matches if match['ground_truth'] == match['top_matches'][0])
+    top_5_correct = sum(1 for match in audio_to_text_matches if match['ground_truth'] in match['top_matches'][:5])
+    top_10_correct = sum(1 for match in audio_to_text_matches if match['ground_truth'] in match['top_matches'])
 
     total = len(audio_to_text_matches)
     top_1_accuracy = top_1_correct / total
-    top_3_accuracy = top_3_correct / total
+    top_5_accuracy = top_5_correct / total
+    top_10_accuracy = top_10_correct / total
 
     print(f"\nTop-1 Accuracy: {top_1_accuracy:.2%}")
-    print(f"Top-3 Accuracy: {top_3_accuracy:.2%}")
+    print(f"Top-5 Accuracy: {top_5_accuracy:.2%}")
+    print(f"Top-10 Accuracy: {top_10_accuracy:.2%}")
+
+    print()
+    print()

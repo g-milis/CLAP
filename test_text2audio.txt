@@ -1,229 +1,6 @@
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-CUDA Available: True
-Evaluation for reweighting_5_1e3_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3190.)
-  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_5_1e3_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 6.05%
-Top-5 Accuracy: 13.81%
-Top-10 Accuracy: 16.78%
-
-
-Evaluation for reweighting_5_1e4_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_5_1e4_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 7.28%
-Top-5 Accuracy: 14.44%
-Top-10 Accuracy: 17.42%
-
-
-Evaluation for reweighting_7_1e2_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_7_1e2_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 3.94%
-Top-5 Accuracy: 10.24%
-Top-10 Accuracy: 13.64%
-
-
-Evaluation for reweighting_7_1e2_acaps_clotho_30
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_7_1e2_acaps_clotho_30/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 2.50%
-Top-5 Accuracy: 7.55%
-Top-10 Accuracy: 9.93%
-
-
-Evaluation for reweighting_7_1e3_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_7_1e3_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 6.28%
-Top-5 Accuracy: 13.97%
-Top-10 Accuracy: 17.07%
-
-
-Evaluation for reweighting_7_1e3_acaps_clotho_30
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_7_1e3_acaps_clotho_30/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 4.94%
-Top-5 Accuracy: 11.84%
-Top-10 Accuracy: 15.55%
-
-
-Evaluation for reweighting_7_1e4_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_7_1e4_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 7.43%
-Top-5 Accuracy: 14.26%
-Top-10 Accuracy: 17.39%
-
-
-Evaluation for reweighting_9_1e3_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_9_1e3_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 6.36%
-Top-5 Accuracy: 13.15%
-Top-10 Accuracy: 16.23%
-
-
-Evaluation for reweighting_9_1e4_acaps_clotho
-Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.bias', 'lm_head.dense.bias', 'lm_head.layer_norm.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint logs/reweighting_9_1e4_acaps_clotho/checkpoints/epoch_latest.pt from users.
-Load Checkpoint...
-Loaded state dict to memory (1)
-Reweighting modules:
-['text_branch.log_reweighting']
-Loading state dict to model (2)
-Loaded state dict to model strictly (3)
-Generating embeddings...
-
-Top-1 Accuracy: 6.87%
-Top-5 Accuracy: 13.91%
-Top-10 Accuracy: 17.89%
-
-
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
 CUDA Available: True
 Evaluation for base
 Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3190.)
-  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.layer_norm.bias', 'lm_head.dense.weight', 'lm_head.layer_norm.weight', 'lm_head.dense.bias', 'lm_head.bias']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
 Load the specified checkpoint models/630k-audioset-best.pt from users.
 Load Checkpoint...
 Loaded state dict to memory (1)
@@ -233,82 +10,200 @@ Loading state dict to model (2)
 Loaded state dict to model strictly (3)
 Generating embeddings...
 
-Top-1 Accuracy: 7.43%
-Top-5 Accuracy: 15.61%
-Top-10 Accuracy: 18.69%
+Top-1 Accuracy: 7.22%
+Top-5 Accuracy: 14.01%
+Top-10 Accuracy: 16.78%
 
 
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-CUDA Available: True
+Evaluation for reweighting_0_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_0_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 6.95%
+Top-5 Accuracy: 14.11%
+Top-10 Accuracy: 17.33%
+
+
+Evaluation for reweighting_1_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_1_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 7.98%
+Top-5 Accuracy: 15.04%
+Top-10 Accuracy: 17.74%
+
+
+Evaluation for reweighting_2_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_2_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 6.79%
+Top-5 Accuracy: 14.75%
+Top-10 Accuracy: 17.58%
+
+
+Evaluation for reweighting_3_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_3_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 6.75%
+Top-5 Accuracy: 13.78%
+Top-10 Accuracy: 17.48%
+
+
+Evaluation for reweighting_4_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_4_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 6.61%
+Top-5 Accuracy: 13.93%
+Top-10 Accuracy: 16.72%
+
+
 Evaluation for reweighting_5_1e5_acaps_clotho
 Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at ../aten/src/ATen/native/TensorShape.cpp:3190.)
-  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.bias', 'lm_head.dense.weight', 'lm_head.layer_norm.bias', 'lm_head.bias', 'lm_head.layer_norm.weight']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint models/630k-audioset-best.pt from users.
+Load the specified checkpoint logs/reweighting_5_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
 Load Checkpoint...
 Loaded state dict to memory (1)
 Reweighting modules:
-[]
+['text_branch.log_reweighting']
 Loading state dict to model (2)
 Loaded state dict to model strictly (3)
 Generating embeddings...
 
-Top-1 Accuracy: 7.71%
-Top-5 Accuracy: 15.71%
-Top-10 Accuracy: 18.56%
+Top-1 Accuracy: 7.16%
+Top-5 Accuracy: 14.75%
+Top-10 Accuracy: 18.13%
+
+
+Evaluation for reweighting_6_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_6_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 6.65%
+Top-5 Accuracy: 13.60%
+Top-10 Accuracy: 16.80%
 
 
 Evaluation for reweighting_7_1e5_acaps_clotho
 Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.bias', 'lm_head.dense.weight', 'lm_head.layer_norm.bias', 'lm_head.bias', 'lm_head.layer_norm.weight']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint models/630k-audioset-best.pt from users.
+Load the specified checkpoint logs/reweighting_7_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
 Load Checkpoint...
 Loaded state dict to memory (1)
 Reweighting modules:
-[]
+['text_branch.log_reweighting']
 Loading state dict to model (2)
 Loaded state dict to model strictly (3)
 Generating embeddings...
 
-Top-1 Accuracy: 7.71%
-Top-5 Accuracy: 16.08%
-Top-10 Accuracy: 19.12%
+Top-1 Accuracy: 7.49%
+Top-5 Accuracy: 14.15%
+Top-10 Accuracy: 17.37%
+
+
+Evaluation for reweighting_8_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_8_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 7.41%
+Top-5 Accuracy: 14.48%
+Top-10 Accuracy: 18.15%
 
 
 Evaluation for reweighting_9_1e5_acaps_clotho
 Initializing empty model here (0)
-/fs/nexus-scratch/milis/miniconda3/clap/lib/python3.8/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
-  warnings.warn(
-Some weights of the model checkpoint at roberta-base were not used when initializing CustomRobertaModel: ['lm_head.dense.bias', 'lm_head.dense.weight', 'lm_head.layer_norm.bias', 'lm_head.bias', 'lm_head.layer_norm.weight']
-- This IS expected if you are initializing CustomRobertaModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
-- This IS NOT expected if you are initializing CustomRobertaModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
-Some weights of CustomRobertaModel were not initialized from the model checkpoint at roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.log_reweighting', 'roberta.pooler.dense.weight']
-You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-Load the specified checkpoint models/630k-audioset-best.pt from users.
+Load the specified checkpoint logs/reweighting_9_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
 Load Checkpoint...
 Loaded state dict to memory (1)
 Reweighting modules:
-[]
+['text_branch.log_reweighting']
 Loading state dict to model (2)
 Loaded state dict to model strictly (3)
 Generating embeddings...
 
-Top-1 Accuracy: 8.06%
-Top-5 Accuracy: 14.73%
-Top-10 Accuracy: 18.24%
+Top-1 Accuracy: 6.50%
+Top-5 Accuracy: 13.62%
+Top-10 Accuracy: 17.35%
+
+
+Evaluation for reweighting_10_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_10_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 7.45%
+Top-5 Accuracy: 15.34%
+Top-10 Accuracy: 19.36%
+
+
+Evaluation for reweighting_11_1e5_acaps_clotho
+Initializing empty model here (0)
+Load the specified checkpoint logs/reweighting_11_1e5_acaps_clotho/checkpoints/epoch_latest.pt from users.
+Load Checkpoint...
+Loaded state dict to memory (1)
+Reweighting modules:
+['text_branch.log_reweighting']
+Loading state dict to model (2)
+Loaded state dict to model strictly (3)
+Generating embeddings...
+
+Top-1 Accuracy: 7.30%
+Top-5 Accuracy: 14.93%
+Top-10 Accuracy: 18.44%
 
 
