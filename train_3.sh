@@ -6,7 +6,7 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --datasetpath="data/audiocaps/audio_files/train" \
         --precision="fp32" \
         --batch-size=96 \
-        --lr=1e-3 \
+        --lr=1e-5 \
         --wd=0.0 \
         --epochs=20 \
         --use-bn-sync \
@@ -17,13 +17,12 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --top-k-checkpoint-select-dataset="AudioCaps-test" \
         --top-k-checkpoint-select-metric="mAP@10" \
         --logs 'logs' \
-        --seed 3407 \
         --gather-with-grad \
         --optimizer "adam" \
         --data-filling "repeatpad" \
         --data-truncating "rand_trunc" \
         --prefetch-factor 2 \
         --report-to "wandb" \
-        --name reweighting_9_1e3_acaps_clotho \
-        --wandb-notes "reweighting_9_1e3_acaps_clotho" \
-        --reweighting_level 9
+        --name reweighting_2_1e5_acaps_clotho \
+        --wandb-notes "reweighting_2_1e5_acaps_clotho" \
+        --reweighting_level 2

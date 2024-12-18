@@ -204,7 +204,7 @@ class CLAP_Module(torch.nn.Module):
             audio_embed = audio_embed.detach().cpu().numpy()
         return audio_embed
 
-    def get_text_embedding(self, x, tokenizer = None, use_tensor = False):
+    def get_text_embedding(self, x, weighting=None, tokenizer = None, use_tensor = False):
         """get text embeddings from texts
 
         Parameters
@@ -225,7 +225,7 @@ class CLAP_Module(torch.nn.Module):
             text_input = tokenizer(x)
         else:
             text_input = self.tokenizer(x)
-        text_embed = self.model.get_text_embedding(text_input)
+        text_embed = self.model.get_text_embedding(text_input, weighting)
         if not use_tensor:
             text_embed = text_embed.detach().cpu().numpy()
         return text_embed

@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 # Use with all three splits
 splits = ["train", "val", "test"]
 
-splits = ["train"]
+splits = ["test"]
 
 for split in splits:
     # Load dataset

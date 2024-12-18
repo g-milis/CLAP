@@ -617,7 +617,7 @@ class CLAP(nn.Module):
     #         tmp[k] = torch.tensor(tmp[k]).to(device=device, non_blocking=True)
     #     return tmp
 
-    def encode_text(self, text, device):
+    def encode_text(self, text, device, weighting=None):
         if self.text_branch_type == "transformer":
             text = text.to(device=device, non_blocking=True)
             x = self.token_embedding(text)  # [batch_size, n_ctx, d_model]
@@ -650,7 +650,8 @@ class CLAP(nn.Module):
                 attention_mask=text["attention_mask"].to(
                     device=device, non_blocking=True
                 ),
-                reweighting_level=self.reweighting_level
+                reweighting_level=self.reweighting_level,
+                weighting=weighting
             )["pooler_output"]
             x = self.text_projection(x)
         elif self.text_branch_type == "bart":
@@ -716,7 +717,7 @@ class CLAP(nn.Module):
     def get_logit_scale(self):
         return self.logit_scale_a.exp(), self.logit_scale_t.exp()
 
-    def get_text_embedding(self, data):
+    def get_text_embedding(self, data, weighting=None):
         """Get the text embedding from the model
 
         Parameters
@@ -733,7 +734,7 @@ class CLAP(nn.Module):
         device = next(self.parameters()).device
         for k in data:
             data[k] = data[k].to(device)
-        text_embeds = self.encode_text(data, device=device)
+        text_embeds = self.encode_text(data, device=device, weighting=weighting)
         text_embeds = F.normalize(text_embeds, dim=-1)
         
         return text_embeds

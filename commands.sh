@@ -3,3 +3,7 @@ pip --cache-dir=/fs/nexus-scratch/milis/cache install torch==1.13.1+cu116 torchv
 ../../miniconda3/clap/bin/python download_audiocaps.py 
 
 conda activate /fs/nexus-scratch/milis/miniconda3/clap
+
+
+gdown --no-check-certificate --folder 1scyH43eQAcrBz-5fAw44C6RNBhC3ejvX
+tar xvf ESC50_1/train/0.tar

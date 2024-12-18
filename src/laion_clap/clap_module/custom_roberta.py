@@ -30,6 +30,7 @@ class CustomRobertaEncoder(nn.Module):
         self,
         hidden_states: torch.Tensor,
         reweighting_level: int,
+        weighting: torch.Tensor = None,
         log_reweighting = None,
         attention_mask: Optional[torch.FloatTensor] = None,
         head_mask: Optional[torch.FloatTensor] = None,
@@ -64,10 +65,10 @@ class CustomRobertaEncoder(nn.Module):
 
             if i >= reweighting_level:
                 #current_attention_mask = attention_mask * torch.exp(log_reweighting)
-                hidden_states *= torch.exp(log_reweighting)
-            else:
-                pass
-                #current_attention_mask = attention_mask 
+                if weighting is None:
+                    hidden_states *= torch.exp(log_reweighting)
+                else:
+                    hidden_states *= weighting
 
             if self.gradient_checkpointing and self.training:
 
@@ -193,6 +194,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
     def forward(
         self,
         reweighting_level: int,
+        weighting: torch.Tensor = None,
         input_ids: Optional[torch.Tensor] = None,
         attention_mask: Optional[torch.Tensor] = None,
         token_type_ids: Optional[torch.Tensor] = None,
@@ -301,6 +303,7 @@ class CustomRobertaModel(RobertaPreTrainedModel):
         )
         encoder_outputs = self.encoder(
             embedding_output,
+            weighting=weighting,
             reweighting_level=reweighting_level,
             log_reweighting=log_reweighting,
             attention_mask=extended_attention_mask,
