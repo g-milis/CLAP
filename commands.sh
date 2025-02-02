@@ -7,3 +7,7 @@ conda activate /fs/nexus-scratch/milis/miniconda3/clap
 
 gdown --no-check-certificate --folder 1scyH43eQAcrBz-5fAw44C6RNBhC3ejvX
 tar xvf ESC50_1/train/0.tar
+
+
+# [milis@nexuscbcb01 ~]$ chown milis:clap /fs/cbcb-scratch/milis/data
+# [milis@nexuscbcb01 ~]$ chown milis:clap /fs/cbcb-scratch/milis/data/wavcaps

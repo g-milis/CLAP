@@ -7,7 +7,8 @@ import torchaudio
 import torch.nn.functional as F
 
 
-def get_clotho(directory):
+def get_clotho(split):
+    directory = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
     data = []
 
     # Iterate through the directory
@@ -41,6 +42,44 @@ def get_clotho(directory):
     return pd.DataFrame(data)
 
 
+def get_wavecaps(
+    directory="/fs/cbcb-scratch/milis/data/wavcaps/download/mnt/fast/nobackup/scratch4weeks/xm00178/WavCaps/data/waveforms/BBC_Sound_Effects_flac",
+    json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/BBC_Sound_Effects/bbc_final.json"
+):
+    data = []
+    # # Iterate through the directory
+    # for file in os.listdir(directory):
+    #     if file.endswith(".json"):
+    # json_path = os.path.join(directory, file)
+    # Load the JSON file
+    if not os.path.exists(json_file):
+        print(f"JSON file not found: {json_file}")
+        return
+    with open(json_file, "r") as f:
+        json_data = json.load(f)
+    # Debug: Check the keys in the JSON structure
+    print(f"JSON keys: {json_data.keys()}")
+    # Iterate through the data list in the JSON
+    for entry in json_data.get("data", []):
+        audio_id = entry["id"]  # Extract audio file ID (with .wav extension)
+        # Construct the full path to the audio file
+        audio_path = os.path.join(directory, audio_id) + ".flac"
+        # print(f"Audio path: {audio_path}")
+        # Check if the audio file exists
+        if os.path.exists(audio_path):
+            data.append({
+                "audiocap_id": audio_path,
+                "youtube_id": audio_path,
+                "start_time": 0,
+                "caption": entry["caption"]
+                #"duration": entry["duration"],
+            })
+        else:
+            print(f"Audio file not found: {audio_path}")
+    print("Total WavCaps samples:", len(data))
+    return pd.DataFrame(data)
+
+
 class AudioDataset(Dataset):
     def __init__(self, split, sample_rate=16000):
         # AudioCaps
@@ -58,12 +97,17 @@ class AudioDataset(Dataset):
             audiocaps_data['youtube_id'].isin(audio_ids)
         ].reset_index(drop=True)
 
-        if split == "train":
-            # Clotho
-            clotho_dir = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
-            clotho_df = get_clotho(clotho_dir)
+        self.data = audiocaps_data
 
-            self.data = pd.concat([audiocaps_data, clotho_df], ignore_index=True)
+        if split == "train":
+            # # Clotho
+            # clotho_df = get_clotho(split)
+            # self.data = pd.concat([self.data, clotho_df], ignore_index=True)
+
+            # WaveCaps
+            wavecaps_df = get_wavecaps()
+            self.data = pd.concat([self.data, wavecaps_df], ignore_index=True)
+
         else:
             self.data = audiocaps_data
 
@@ -145,4 +189,5 @@ if __name__ == "__main__":
 
     # Iterate through the data
     for batch in dataloader:
-        pass
+        print(batch)
+        break
