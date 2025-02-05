@@ -23,6 +23,6 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --data-truncating "rand_trunc" \
         --prefetch-factor 2 \
         --report-to "wandb" \
-        --name reweighting_1_1e5_acaps_clotho \
-        --wandb-notes "reweighting_1_1e5_acaps_clotho" \
+        --name test_wavcaps \
+        --wandb-notes "test_wavcaps" \
         --reweighting_level 1

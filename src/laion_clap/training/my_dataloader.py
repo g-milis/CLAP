@@ -7,7 +7,7 @@ import torchaudio
 import torch.nn.functional as F
 
 
-def get_clotho(split):
+def get_clotho():
     directory = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
     data = []
 
@@ -38,32 +38,74 @@ def get_clotho(split):
                         "caption": caption
                     })
 
-    print(len(data))
     return pd.DataFrame(data)
 
 
-def get_wavecaps(
-    directory="/fs/cbcb-scratch/milis/data/wavcaps/download/mnt/fast/nobackup/scratch4weeks/xm00178/WavCaps/data/waveforms/BBC_Sound_Effects_flac",
-    json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/BBC_Sound_Effects/bbc_final.json"
-):
+def get_clotho_new():
+    clotho_dir = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/development"
+    csv_file = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/clotho_captions_development.csv"
+    
+    data = []
+    
+    with open(csv_file, encoding="utf-8") as file:
+        next(file)  # Skip the first line
+        
+        for line in file:
+            parts = line.strip().split(",", maxsplit=1)
+            if len(parts) < 2:
+                continue
+            file_name, captions = parts[0], parts[1]
+            captions_list = captions.split(",")
+
+            audio_path = os.path.join(clotho_dir, file_name)
+            
+            for caption in captions_list:
+                if os.path.exists(audio_path):
+                    data.append({
+                        "audiocap_id": audio_path,
+                        "youtube_id": audio_path,
+                        "start_time": 0,
+                        "caption": caption
+                    })
+    
+    return pd.DataFrame(data)
+
+
+def get_wavecaps_subset(directory="", json_file="", replace_wav=False):
     data = []
     # # Iterate through the directory
     # for file in os.listdir(directory):
     #     if file.endswith(".json"):
     # json_path = os.path.join(directory, file)
+
+    # Get blacklisted files to avoid test set leakage
+    blacklisted_ids = []
+    for blacklist_path in [
+        "/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/blacklist/blacklist_exclude_test_ac.json",
+        "/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/blacklist/blacklist_exclude_ub8k_esc50_vggsound.json"
+    ]:
+        with open(blacklist_path) as f:
+            blacklist_json = json.load(f)
+        blacklisted_ids += blacklist_json["AudioSet"] + blacklist_json["FreeSound"]
+
     # Load the JSON file
     if not os.path.exists(json_file):
         print(f"JSON file not found: {json_file}")
         return
     with open(json_file, "r") as f:
         json_data = json.load(f)
-    # Debug: Check the keys in the JSON structure
-    print(f"JSON keys: {json_data.keys()}")
     # Iterate through the data list in the JSON
     for entry in json_data.get("data", []):
         audio_id = entry["id"]  # Extract audio file ID (with .wav extension)
-        # Construct the full path to the audio file
-        audio_path = os.path.join(directory, audio_id) + ".flac"
+
+        if audio_id in blacklisted_ids:
+            # print(audio_id)
+            continue
+
+        if replace_wav:
+            audio_path = os.path.join(directory, audio_id).replace(".wav", ".flac")
+        else:
+            audio_path = os.path.join(directory, audio_id) + ".flac"
         # print(f"Audio path: {audio_path}")
         # Check if the audio file exists
         if os.path.exists(audio_path):
@@ -76,7 +118,7 @@ def get_wavecaps(
             })
         else:
             print(f"Audio file not found: {audio_path}")
-    print("Total WavCaps samples:", len(data))
+    # print("Total WavCaps samples:", len(data))
     return pd.DataFrame(data)
 
 
@@ -84,12 +126,12 @@ class AudioDataset(Dataset):
     def __init__(self, split, sample_rate=16000):
         # AudioCaps
         csv_file = f"/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/{split}.csv"
-        audiocaps_dir = f"/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/audio_files/{split}"
+        audiocaps_dir = f"/fs/nexus-scratch/milis/848K/CLAP/AudioCaps_CVSSP/waveforms/{split}"
 
         self.max_length = 10 * sample_rate
         # Get list of audio files in the directory
         audio_files = [file for file in os.listdir(audiocaps_dir) if file.endswith('.wav')]
-        audio_ids = [os.path.basename(name).rsplit("_")[0] for name in audio_files]
+        audio_ids = [os.path.basename(name).rsplit("_")[0][1:].replace(".wav", "") for name in audio_files]
         
         # Load and filter the CSV data from AudioCaps
         audiocaps_data = pd.read_csv(csv_file)
@@ -99,19 +141,32 @@ class AudioDataset(Dataset):
 
         self.data = audiocaps_data
 
+        print("AudioCaps samples:", len(audiocaps_data))
+
         if split == "train":
-            # # Clotho
-            # clotho_df = get_clotho(split)
-            # self.data = pd.concat([self.data, clotho_df], ignore_index=True)
+            # Clotho
+            clotho_df = get_clotho_new()
+            self.data = pd.concat([self.data, clotho_df], ignore_index=True)
+            print("Clotho samples:", len(clotho_df))
 
-            # WaveCaps
-            wavecaps_df = get_wavecaps()
-            self.data = pd.concat([self.data, wavecaps_df], ignore_index=True)
+            # BBC_Sound_Effects
+            wavecaps_df_BBC_Sound_Effects = get_wavecaps_subset(
+                directory="/fs/cbcb-scratch/milis/data/wavcaps/BBC_Sound_Effects_flac",
+                json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/BBC_Sound_Effects/bbc_final.json"
+            )
+            self.data = pd.concat([self.data, wavecaps_df_BBC_Sound_Effects], ignore_index=True)
+            print("BBC_Sound_Effects samples:", len(wavecaps_df_BBC_Sound_Effects))
 
-        else:
-            self.data = audiocaps_data
+            # # AudioSet
+            # wavecaps_df_AudioSet = get_wavecaps_subset(
+            #     directory="/fs/cbcb-scratch/milis/data/wavcaps/AudioSet_SL_flac/",
+            #     json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/AudioSet_SL/as_final.json",
+            #     replace_wav=True
+            # )
+            # self.data = pd.concat([self.data, wavecaps_df_AudioSet], ignore_index=True)
+            # print("AudioSet samples:", len(wavecaps_df_AudioSet))
 
-        print("Data samples:", len(self.data))
+        print("Total samples:", len(self.data))
 
         # Store directory and parameters
         self.audiocaps_dir = audiocaps_dir
@@ -132,8 +187,9 @@ class AudioDataset(Dataset):
         # longer = row.get('longer', False)  # Optional field
 
         if not audio_path.endswith(".flac"):
-            audio_name = f"{row['youtube_id']}_{row['start_time']}.wav"
-            audio_path = os.path.join(self.audiocaps_dir, audio_name)
+            if not audio_path.endswith(".wav"):
+                audio_name = f"Y{row['youtube_id']}.wav"
+                audio_path = os.path.join(self.audiocaps_dir, audio_name)
 
         waveform, orig_sample_rate = torchaudio.load(audio_path)
 
