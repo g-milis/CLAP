@@ -1,7 +1,7 @@
 # ONLY CHANGE THESE TWO PARAMETERS
 # Use a different name each time, and use reweighting_level=-1 for full finetuning
-reweighting_level=7
-name=test_wavcaps
+reweighting_level=-1
+name=test_wavcaps_full
 
 
 srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \

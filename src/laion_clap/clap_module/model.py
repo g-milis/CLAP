@@ -647,14 +647,22 @@ class CLAP(nn.Module):
             )["pooler_output"]
             x = self.text_projection(x)
         elif self.text_branch_type == "roberta":
-            x = self.text_branch(
-                input_ids=text["input_ids"].to(device=device, non_blocking=True),
-                attention_mask=text["attention_mask"].to(
-                    device=device, non_blocking=True
-                ),
-                reweighting_level=self.reweighting_level,
-                weighting=weighting
-            )["pooler_output"]
+            if self.reweighting_level == -1:
+                x = self.text_branch(
+                    input_ids=text["input_ids"].to(device=device, non_blocking=True),
+                    attention_mask=text["attention_mask"].to(
+                        device=device, non_blocking=True
+                    )
+                )["pooler_output"]
+            else:
+                x = self.text_branch(
+                    input_ids=text["input_ids"].to(device=device, non_blocking=True),
+                    attention_mask=text["attention_mask"].to(
+                        device=device, non_blocking=True
+                    ),
+                    reweighting_level=self.reweighting_level,
+                    weighting=weighting
+                )["pooler_output"]
             x = self.text_projection(x)
         elif self.text_branch_type == "bart":
             x = torch.mean(self.text_branch(
