@@ -95,12 +95,12 @@ def create_model(
     pretrained = pretrained.lower()
     if pretrained == "openai":
         if amodel_name in _MODEL_CONFIGS:
-            logging.info(f"Loading {amodel_name} model config.")
+            # logging.info(f"Loading {amodel_name} model config.")
             model_cfg = deepcopy(_MODEL_CONFIGS[amodel_name])
         else:
-            logging.error(
-                f"Model config for {amodel_name} not found; available models {list_models()}."
-            )
+            # logging.error(
+            #     f"Model config for {amodel_name} not found; available models {list_models()}."
+            # )
             raise RuntimeError(f"Model config for {amodel_name} not found.")
 
         logging.info(f"Loading pretrained ViT-B-16 text encoder from OpenAI.")
@@ -120,12 +120,12 @@ def create_model(
             model = model.float()
     else:
         if amodel_name in _MODEL_CONFIGS:
-            logging.info(f"Loading {amodel_name} model config.")
+            #logging.info(f"Loading {amodel_name} model config.")
             model_cfg = deepcopy(_MODEL_CONFIGS[amodel_name])
         else:
-            logging.error(
-                f"Model config for {amodel_name} not found; available models {list_models()}."
-            )
+            # logging.error(
+            #     f"Model config for {amodel_name} not found; available models {list_models()}."
+            # )
             raise RuntimeError(f"Model config for {amodel_name} not found.")
 
         if force_quick_gelu:

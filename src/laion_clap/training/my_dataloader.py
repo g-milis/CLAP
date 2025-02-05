@@ -157,14 +157,14 @@ class AudioDataset(Dataset):
             self.data = pd.concat([self.data, wavecaps_df_BBC_Sound_Effects], ignore_index=True)
             print("BBC_Sound_Effects samples:", len(wavecaps_df_BBC_Sound_Effects))
 
-            # # AudioSet
-            # wavecaps_df_AudioSet = get_wavecaps_subset(
-            #     directory="/fs/cbcb-scratch/milis/data/wavcaps/AudioSet_SL_flac/",
-            #     json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/AudioSet_SL/as_final.json",
-            #     replace_wav=True
-            # )
-            # self.data = pd.concat([self.data, wavecaps_df_AudioSet], ignore_index=True)
-            # print("AudioSet samples:", len(wavecaps_df_AudioSet))
+            # AudioSet
+            wavecaps_df_AudioSet = get_wavecaps_subset(
+                directory="/fs/cbcb-scratch/milis/data/wavcaps/AudioSet_SL_flac/",
+                json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/AudioSet_SL/as_final.json",
+                replace_wav=True
+            )
+            self.data = pd.concat([self.data, wavecaps_df_AudioSet], ignore_index=True)
+            print("AudioSet samples:", len(wavecaps_df_AudioSet))
 
         print("Total samples:", len(self.data))
 

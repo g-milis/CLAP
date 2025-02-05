@@ -461,13 +461,15 @@ def main():
                     f"=> loaded checkpoint '{args.resume}' (epoch {start_epoch})"
                 )
 
-            # NOTE: added this to freeze the CLAP model except the reweighting
-            for name, module in model.named_parameters():
-                if "reweighting" in name:
-                    print("Activating gradients for", name)
-                    module.requires_grad_(True)
-                else: 
-                    module.requires_grad_(False)
+            if args.reweighting_level == -1:
+                print("Activating gradients for all parameters")
+            else:
+                for name, module in model.named_parameters():
+                    if "reweighting" in name:
+                        print("Activating gradients for", name)
+                        module.requires_grad_(True)
+                    else: 
+                        module.requires_grad_(False)
 
             trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
             logging.info(f"Trainable params: {trainable_params}")

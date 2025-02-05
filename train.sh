@@ -1,3 +1,9 @@
+# ONLY CHANGE THESE TWO PARAMETERS
+# Use a different name each time, and use reweighting_level=-1 for full finetuning
+reweighting_level=7
+name=test_wavcaps
+
+
 srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
     --mem-per-cpu=64G --gres=gpu  --time=12:00:00 \
     ../../miniconda3/clap/bin/python -m laion_clap.training.main \
@@ -23,6 +29,6 @@ srun --pty --partition=cbcb-heng --account=cbcb-heng --qos=high \
         --data-truncating "rand_trunc" \
         --prefetch-factor 2 \
         --report-to "wandb" \
-        --name test_wavcaps \
-        --wandb-notes "test_wavcaps" \
-        --reweighting_level 1
+        --name $name \
+        --wandb-notes $name \
+        --reweighting_level $reweighting_level

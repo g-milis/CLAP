@@ -508,8 +508,10 @@ class CLAP(nn.Module):
                 nn.Linear(self.joint_embed_shape, self.joint_embed_shape)
             )
         elif text_cfg.model_type == "roberta":
-            # self.text_branch = RobertaModel.from_pretrained('roberta-base')
-            self.text_branch = CustomRobertaModel.from_pretrained('roberta-base')
+            if self.reweighting_level == -1:
+                self.text_branch = RobertaModel.from_pretrained('roberta-base')
+            else:
+                self.text_branch = CustomRobertaModel.from_pretrained('roberta-base')
             self.text_transform = MLPLayers(units=[self.joint_embed_shape,
                                                    self.joint_embed_shape,
                                                    self.joint_embed_shape], dropout=0.1)
