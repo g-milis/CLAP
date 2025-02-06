@@ -180,7 +180,7 @@ class BigAudioDataset(Dataset):
             # FreeSound
             wavecaps_df_FreeSound = get_wavecaps_subset(
                 directory="/vulcanscratch/simin95/CLAP/data/wavcaps/FreeSound_new",
-                json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/FreeSound/fsd_final.json"
+                json_file="/fs/cbcb-scratch/milis/data/wavcaps/fsd_final.json"
             )
             self.data = pd.concat([self.data, wavecaps_df_FreeSound], ignore_index=True)
             print("FreeSound samples:", len(wavecaps_df_FreeSound))
