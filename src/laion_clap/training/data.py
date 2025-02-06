@@ -31,7 +31,7 @@ from transformers import BertTokenizer
 from transformers import RobertaTokenizer
 from transformers import BartTokenizer
 
-from .my_dataloader import AudioDataset
+from .my_dataloader import BigAudioDataset
 
 try:
     import horovod.torch as hvd
@@ -845,9 +845,8 @@ def my_get_dataset(args, model_cfg, is_train):
         split = "train"
     else:
         split = "val"
-    dataset = AudioDataset(
-        split,
-        # mel_spec_params={"sample_rate": 16000, "n_fft": 1024, "hop_length": 512, "n_mels": 64}
+    dataset = BigAudioDataset(
+        split
     )
 
     num_samples = len(dataset)
@@ -864,6 +863,7 @@ def my_get_dataset(args, model_cfg, is_train):
         num_workers=args.workers,
         sampler=sampler,
         drop_last=is_train,
+        collate_fn=dataset.collate_fn
     )
     dataloader.num_samples = num_samples
     dataloader.num_batches = len(dataloader)

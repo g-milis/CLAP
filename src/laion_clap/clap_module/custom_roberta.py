@@ -63,7 +63,8 @@ class CustomRobertaEncoder(nn.Module):
 
             current_attention_mask = attention_mask
 
-            if i >= reweighting_level:
+            # `i` is from 0 to 11, `reweighting_level` is from 1 to 12
+            if i + 1 >= reweighting_level:
                 #current_attention_mask = attention_mask * torch.exp(log_reweighting)
                 if weighting is None:
                     hidden_states *= torch.exp(log_reweighting)

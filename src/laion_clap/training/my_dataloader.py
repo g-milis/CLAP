@@ -7,43 +7,53 @@ import torchaudio
 import torch.nn.functional as F
 
 
-def get_clotho():
-    directory = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
-    data = []
+# NOTE: Change these paths accordingly ========================================
+# Where you saved Clotho
+CLOTHO_ROOT_PATH = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/"
 
-    # Iterate through the directory
-    for file in os.listdir(directory):
-        if file.endswith(".json"):
-            # Get the base name without extension
-            basename = os.path.splitext(file)[0]
+# Where you saved AudioCaps
+AUDIOCAPS_CSVS_PATH = "/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps"
+AUDIOCAPS_WAVEFORMS_PATH = "/fs/nexus-scratch/milis/848K/CLAP/AudioCaps_CVSSP/waveforms"
+# The rest of the paths are shared ============================================
+
+
+# def get_clotho():
+#     directory = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
+#     data = []
+
+#     # Iterate through the directory
+#     for file in os.listdir(directory):
+#         if file.endswith(".json"):
+#             # Get the base name without extension
+#             basename = os.path.splitext(file)[0]
             
-            # Corresponding .flac file
-            flac_path = os.path.join(directory, f"{basename}.flac")
+#             # Corresponding .flac file
+#             flac_path = os.path.join(directory, f"{basename}.flac")
             
-            # JSON file path
-            json_path = os.path.join(directory, file)
+#             # JSON file path
+#             json_path = os.path.join(directory, file)
             
-            # Check if the corresponding .flac file exists
-            if os.path.exists(flac_path):
-                # Load captions from JSON
-                with open(json_path) as f:
-                    captions = json.load(f)["text"]
+#             # Check if the corresponding .flac file exists
+#             if os.path.exists(flac_path):
+#                 # Load captions from JSON
+#                 with open(json_path) as f:
+#                     captions = json.load(f)["text"]
                 
-                # Add entries to the data list
-                for caption in captions:
-                    data.append({
-                        "audiocap_id": flac_path,
-                        "youtube_id": flac_path,
-                        "start_time": 0,
-                        "caption": caption
-                    })
+#                 # Add entries to the data list
+#                 for caption in captions:
+#                     data.append({
+#                         "audiocap_id": flac_path,
+#                         "youtube_id": flac_path,
+#                         "start_time": 0,
+#                         "caption": caption
+#                     })
 
-    return pd.DataFrame(data)
+#     return pd.DataFrame(data)
 
 
 def get_clotho_new():
-    clotho_dir = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/development"
-    csv_file = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/clotho_captions_development.csv"
+    clotho_dir = f"{CLOTHO_ROOT_PATH}/development"
+    csv_file = f"{CLOTHO_ROOT_PATH}/clotho_captions_development.csv"
     
     data = []
     
@@ -73,10 +83,6 @@ def get_clotho_new():
 
 def get_wavecaps_subset(directory="", json_file="", replace_wav=False):
     data = []
-    # # Iterate through the directory
-    # for file in os.listdir(directory):
-    #     if file.endswith(".json"):
-    # json_path = os.path.join(directory, file)
 
     # Get blacklisted files to avoid test set leakage
     blacklisted_ids = []
@@ -116,17 +122,14 @@ def get_wavecaps_subset(directory="", json_file="", replace_wav=False):
                 "caption": entry["caption"]
                 #"duration": entry["duration"],
             })
-        else:
-            print(f"Audio file not found: {audio_path}")
-    # print("Total WavCaps samples:", len(data))
     return pd.DataFrame(data)
 
 
-class AudioDataset(Dataset):
+class BigAudioDataset(Dataset):
     def __init__(self, split, sample_rate=16000):
         # AudioCaps
-        csv_file = f"/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps/{split}.csv"
-        audiocaps_dir = f"/fs/nexus-scratch/milis/848K/CLAP/AudioCaps_CVSSP/waveforms/{split}"
+        csv_file = f"{AUDIOCAPS_CSVS_PATH}/{split}.csv"
+        audiocaps_dir = f"{AUDIOCAPS_WAVEFORMS_PATH}/{split}"
 
         self.max_length = 10 * sample_rate
         # Get list of audio files in the directory
@@ -159,12 +162,29 @@ class AudioDataset(Dataset):
 
             # AudioSet
             wavecaps_df_AudioSet = get_wavecaps_subset(
-                directory="/fs/cbcb-scratch/milis/data/wavcaps/AudioSet_SL_flac/",
+                directory="/fs/cbcb-scratch/milis/data/wavcaps/AudioSet_SL_flac",
                 json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/AudioSet_SL/as_final.json",
                 replace_wav=True
             )
             self.data = pd.concat([self.data, wavecaps_df_AudioSet], ignore_index=True)
             print("AudioSet samples:", len(wavecaps_df_AudioSet))
+
+            # SoundBible
+            wavecaps_df_SoundBible = get_wavecaps_subset(
+                directory="/vulcanscratch/simin95/CLAP/data/wavcaps/SoundBible",
+                json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/SoundBible/sb_final.json"
+            )
+            self.data = pd.concat([self.data, wavecaps_df_SoundBible], ignore_index=True)
+            print("SoundBible samples:", len(wavecaps_df_SoundBible))
+
+            # FreeSound
+            wavecaps_df_FreeSound = get_wavecaps_subset(
+                directory="/vulcanscratch/simin95/CLAP/data/wavcaps/FreeSound_new",
+                json_file="/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/FreeSound/fsd_final.json"
+            )
+            self.data = pd.concat([self.data, wavecaps_df_FreeSound], ignore_index=True)
+            print("FreeSound samples:", len(wavecaps_df_FreeSound))
+            
 
         print("Total samples:", len(self.data))
 
@@ -190,13 +210,20 @@ class AudioDataset(Dataset):
             if not audio_path.endswith(".wav"):
                 audio_name = f"Y{row['youtube_id']}.wav"
                 audio_path = os.path.join(self.audiocaps_dir, audio_name)
+        
+        try:
 
-        waveform, orig_sample_rate = torchaudio.load(audio_path)
+            waveform, orig_sample_rate = torchaudio.load(audio_path)
 
-        # Resample if necessary
-        if orig_sample_rate != self.sample_rate:
-            resampler = torchaudio.transforms.Resample(orig_sample_rate, self.sample_rate)
-            waveform = resampler(waveform)
+            # Resample if necessary
+            if orig_sample_rate != self.sample_rate:
+                resampler = torchaudio.transforms.Resample(orig_sample_rate, self.sample_rate)
+                waveform = resampler(waveform)
+
+        except:
+
+            # print("problem:", audio_path)
+            return None
 
         num_samples = waveform.size(1)  # Shape: (channels, samples)
         target_length = self.max_length or num_samples  # Use the current waveform length if max_length is not set
@@ -225,10 +252,10 @@ class AudioDataset(Dataset):
         return data_dict
     
 
-def collate_fn(batch):
-    """Custom collate function to handle missing files."""
-    batch = [item for item in batch if item is not None]  # Remove None entries
-    return batch
+    def collate_fn(self, batch):
+        """Custom collate function to handle missing files."""
+        batch = [item for item in batch if item is not None]
+        return batch
 
 
 
@@ -236,14 +263,15 @@ def collate_fn(batch):
 if __name__ == "__main__":
     # Define the dataset
     split = "train"
-    dataset = AudioDataset(
+    dataset = BigAudioDataset(
         split
     )
 
     # Wrap the dataset in a DataLoader
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=dataset.collate_fn)
 
     # Iterate through the data
     for batch in dataloader:
-        print(batch)
-        break
+        pass
+        # print(batch)
+        # break
