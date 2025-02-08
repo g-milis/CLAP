@@ -862,8 +862,7 @@ def my_get_dataset(args, model_cfg, is_train):
         shuffle=False,
         num_workers=args.workers,
         sampler=sampler,
-        drop_last=is_train,
-        collate_fn=dataset.collate_fn
+        drop_last=is_train
     )
     dataloader.num_samples = num_samples
     dataloader.num_batches = len(dataloader)

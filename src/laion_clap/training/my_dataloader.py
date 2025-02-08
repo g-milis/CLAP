@@ -2,23 +2,21 @@ import os
 import pandas as pd
 import torch
 import json
+import random
 from torch.utils.data import Dataset, DataLoader
 import torchaudio
-import torch.nn.functional as F
+import torchaudio.functional as F
+
+torchaudio.set_audio_backend("sox_io")
 
 
-# NOTE: Change these paths accordingly ========================================
-# Where you saved Clotho
-CLOTHO_ROOT_PATH = "/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/"
-
-# Where you saved AudioCaps
-AUDIOCAPS_CSVS_PATH = "/fs/nexus-scratch/milis/848K/CLAP/data/audiocaps"
-AUDIOCAPS_WAVEFORMS_PATH = "/fs/nexus-scratch/milis/848K/CLAP/AudioCaps_CVSSP/waveforms"
-# The rest of the paths are shared ============================================
+CLOTHO_ROOT_PATH = "/fs/cbcb-scratch/milis/data/clotho_dataset"
+AUDIOCAPS_CSVS_PATH = "/fs/cbcb-scratch/milis/data/audiocaps"
+AUDIOCAPS_WAVEFORMS_PATH = "/fs/cbcb-scratch/milis/data/AudioCaps_CVSSP/waveforms"
 
 
 # def get_clotho():
-#     directory = f"/fs/nexus-scratch/milis/848K/CLAP/data/clotho_dataset/{split}"
+#     directory = f"/fs/cbcb-scratch/milis/data/clotho_dataset/{split}"
 #     data = []
 
 #     # Iterate through the directory
@@ -184,7 +182,14 @@ class BigAudioDataset(Dataset):
             )
             self.data = pd.concat([self.data, wavecaps_df_FreeSound], ignore_index=True)
             print("FreeSound samples:", len(wavecaps_df_FreeSound))
-            
+
+        # Remove problematic paths, some are duplicate
+        with open("problematic_files.txt") as f:
+            problematic_paths = set([line.strip() for line in f.readlines()])
+
+        self.data = self.data[
+            ~self.data['youtube_id'].isin(problematic_paths)
+        ].reset_index(drop=True)
 
         print("Total samples:", len(self.data))
 
@@ -212,17 +217,27 @@ class BigAudioDataset(Dataset):
                 audio_path = os.path.join(self.audiocaps_dir, audio_name)
         
         try:
+            # Get file metadata to determine total frames
+            info = torchaudio.info(audio_path)
+            total_samples = info.num_frames
 
-            waveform, orig_sample_rate = torchaudio.load(audio_path)
+            segment_samples = info.sample_rate * 10
+
+            # Ensure we don't exceed the total file length
+            if total_samples > segment_samples:
+                start_sample = random.randint(0, total_samples - segment_samples)
+            else:
+                start_sample = 0  # If file is too short, take from the beginning
+
+            # Load only the necessary part of the file
+            waveform, orig_sample_rate = torchaudio.load(audio_path, frame_offset=start_sample, num_frames=segment_samples)
 
             # Resample if necessary
             if orig_sample_rate != self.sample_rate:
-                resampler = torchaudio.transforms.Resample(orig_sample_rate, self.sample_rate)
-                waveform = resampler(waveform)
+                waveform = F.resample(waveform, orig_freq=orig_sample_rate, new_freq=self.sample_rate)
 
-        except:
-
-            # print("problem:", audio_path)
+        except RuntimeError:
+            print("Problem:", audio_path)
             return None
 
         num_samples = waveform.size(1)  # Shape: (channels, samples)
@@ -231,7 +246,7 @@ class BigAudioDataset(Dataset):
         # Zero-pad the waveform if it's shorter than the target length
         if num_samples < target_length:
             padding = target_length - num_samples
-            waveform = F.pad(waveform, (0, padding))  # Pad on the right
+            waveform = torch.nn.functional.pad(waveform, (0, padding))  # Pad on the right
         elif num_samples > target_length:
             waveform = waveform[..., :target_length]
 
@@ -258,9 +273,11 @@ class BigAudioDataset(Dataset):
         return batch
 
 
-
 # Example usage
 if __name__ == "__main__":
+    import sys
+    from tqdm import tqdm
+
     # Define the dataset
     split = "train"
     dataset = BigAudioDataset(
@@ -268,10 +285,14 @@ if __name__ == "__main__":
     )
 
     # Wrap the dataset in a DataLoader
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True, collate_fn=dataset.collate_fn)
+    dataloader = DataLoader(
+        dataset,
+        batch_size=256,
+        shuffle=True,
+        collate_fn=dataset.collate_fn,
+        pin_memory=True
+    )
 
     # Iterate through the data
-    for batch in dataloader:
+    for batch in tqdm(dataloader, file=sys.stderr):
         pass
-        # print(batch)
-        # break
