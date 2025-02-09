@@ -4,7 +4,7 @@
 # ALSO CHANGE YOUR PARTITION AND ACCOUNT!
 reweighting_level=6
 lr=1e-5
-name=reweighting_6_1e5
+name=reweighting_6_1e5_new
 
 # No need to change these
 batch_size=64
