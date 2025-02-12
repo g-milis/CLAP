@@ -2,9 +2,9 @@
 # Use a different name each time, and use reweighting_level=-1 for full finetuning
 # Use numbers from 1 to 12
 # ALSO CHANGE YOUR PARTITION AND ACCOUNT!
-reweighting_level=4
-lr=1e-4
-name=reweighting_4_1e4_new
+reweighting_level=3
+lr=1e-5
+name=reweighting_3_1e5_new
 
 # No need to change these
 batch_size=64

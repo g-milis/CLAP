@@ -85,8 +85,8 @@ def get_wavecaps_subset(directory="", json_file="", replace_wav=False):
     # Get blacklisted files to avoid test set leakage
     blacklisted_ids = []
     for blacklist_path in [
-        "/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/blacklist/blacklist_exclude_test_ac.json",
-        "/fs/nexus-scratch/milis/848K/CLAP/WavCaps/data/json_files/blacklist/blacklist_exclude_ub8k_esc50_vggsound.json"
+        "WavCaps/data/json_files/blacklist/blacklist_exclude_test_ac.json",
+        "WavCaps/data/json_files/blacklist/blacklist_exclude_ub8k_esc50_vggsound.json"
     ]:
         with open(blacklist_path) as f:
             blacklist_json = json.load(f)

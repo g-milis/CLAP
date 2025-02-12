@@ -7,29 +7,11 @@ import numpy as np
 
 
 models = [
-    # "base"
-    # "reweighting_5_1e3_acaps_clotho",
-    # "reweighting_5_1e4_acaps_clotho",
-    # "reweighting_7_1e2_acaps_clotho",
-    # "reweighting_7_1e2_acaps_clotho_30",
-    # "reweighting_7_1e3_acaps_clotho",
-    # "reweighting_7_1e3_acaps_clotho_30",
-    # "reweighting_7_1e4_acaps_clotho",
-    # "reweighting_9_1e3_acaps_clotho",
-    # "reweighting_9_1e4_acaps_clotho",
     "base",
-    "reweighting_0_1e5_acaps_clotho",
-    "reweighting_1_1e5_acaps_clotho",
-    "reweighting_2_1e5_acaps_clotho",
-    "reweighting_3_1e5_acaps_clotho",
-    "reweighting_4_1e5_acaps_clotho",
-    "reweighting_5_1e5_acaps_clotho",
-    "reweighting_6_1e5_acaps_clotho",
-    "reweighting_7_1e5_acaps_clotho",
-    "reweighting_8_1e5_acaps_clotho",
-    "reweighting_9_1e5_acaps_clotho",
-    "reweighting_10_1e5_acaps_clotho",
-    "reweighting_11_1e5_acaps_clotho",
+    "reweighting_6_1e4_new",
+    "reweighting_5_1e4_new",
+    "reweighting_4_1e4_new",
+    "reweighting_6_1e5_new",
 ]
 
 # Ensure CUDA is available
@@ -38,13 +20,13 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
 # Load dataset
-dataset_path = 'data/audiocaps/test.csv'
-audio_folder = "data/audiocaps/audio_files/test"
+dataset_path = '/fs/cbcb-scratch/milis/data/audiocaps/test.csv'
+audio_folder = "/fs/cbcb-scratch/milis/data/AudioCaps_CVSSP/waveforms/test"
 data = pd.read_csv(dataset_path)
 
 # Add ground truth column (audio filename corresponding to each caption)
 data['ground_truth_audio'] = data.apply(
-    lambda row: f"{row['youtube_id']}_{row['start_time']}.wav", axis=1
+    lambda row: f"Y{row['youtube_id']}.wav", axis=1
 )
 ground_truth_audio = data['ground_truth_audio'].tolist()
 captions = data['caption'].tolist()
@@ -52,6 +34,8 @@ captions = data['caption'].tolist()
 # Define audio folder
 audio_files_paths = [os.path.join(audio_folder, f) for f in os.listdir(audio_folder) if f.endswith('.wav')]
 
+print("Captions:", len(captions))
+print("Audios:", len(audio_files_paths))
 
 for model_name in models:
     print("Evaluation for", model_name)
