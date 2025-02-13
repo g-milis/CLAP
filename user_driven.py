@@ -7,6 +7,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src import laion_clap
 
 
+def batch_process_files(file_list, batch_size, func):
+    results = []
+    for i in range(0, len(file_list), batch_size):
+        batch = file_list[i:i + batch_size]
+        batch_result = func(batch)
+        results.append(batch_result)
+    return np.concatenate(results, axis=0)
+
+
 def contains_keywords(text, keywords):
     """
     Checks if a string contains any of the specified keywords (case-insensitive).
@@ -105,7 +114,7 @@ if __name__ == "__main__":
 
     # Load dataset
     dataset_path = "/fs/cbcb-scratch/milis/data/clotho_dataset/clotho_captions_evaluation.csv"
-    audio_folder = "/fs/cbcb-scratch/milis/data/clotho_dataset/evaluation/"
+    audio_folder = "/fs/cbcb-scratch/milis/data/clotho_dataset/evaluation"
     data = pd.read_csv(dataset_path)
 
     # Define audio folder
@@ -121,6 +130,14 @@ if __name__ == "__main__":
         else:
             model.load_ckpt(f'logs/{model_name}/checkpoints/epoch_latest.pt', strict=False)
 
+        # Get all audio embeddings
+        # audio_embed = model.get_audio_embedding_from_filelist(audio_files_paths)
+        audio_embed = batch_process_files(audio_files_paths, 128, model.get_audio_embedding_from_filelist)
+
+        if isinstance(audio_embed, np.ndarray):
+            audio_embed = torch.tensor(audio_embed).to(device)
+        audio_embed = torch.nan_to_num(audio_embed, nan=0.0)
+
         for category, captions in generic_captions.items():
             print("Category:", category)
 
@@ -129,17 +146,10 @@ if __name__ == "__main__":
                 with torch.amp.autocast('cuda'):
                     print("Generating embeddings...")
                     text_embed = model.get_text_embedding(captions)
-                    audio_embed = model.get_audio_embedding_from_filelist(audio_files_paths)
 
-            # Ensure text_embed and audio_embed are PyTorch tensors
             if isinstance(text_embed, np.ndarray):
                 text_embed = torch.tensor(text_embed).to(device)
-            if isinstance(audio_embed, np.ndarray):
-                audio_embed = torch.tensor(audio_embed).to(device)
-
-            # Handle NaN values by replacing them with zero
             text_embed = torch.nan_to_num(text_embed, nan=0.0)
-            audio_embed = torch.nan_to_num(audio_embed, nan=0.0)
 
             # Compute cosine similarity and top matches for Text-to-Audio
             text_to_audio_matches = []
@@ -181,4 +191,4 @@ if __name__ == "__main__":
                 print(f"Ground Truth: {match['ground_truth']}")
                 print(f"Ground Truth in Top Matches: {match['is_ground_truth_present']}")
                 for j, audio_file in enumerate(match['top_matches']):
-                     print(f"  {j+1}. {audio_file}")
+                    print(f"  {j+1}. {audio_file}")

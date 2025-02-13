@@ -7,16 +7,29 @@ import numpy as np
 
 
 models = [
-    "base",
-    "reweighting_6_1e4_new",
-    "reweighting_5_1e4_new",
-    "reweighting_4_1e4_new",
-    "reweighting_6_1e5_new",
+    # "base",
+    # "reweighting_6_1e4_new",
+    # "reweighting_5_1e4_new",
+    # "reweighting_4_1e4_new",
+    # "reweighting_6_1e5_new",
+    "reweighting_1_1e5_new",
+    "reweighting_2_1e5_new",
+    "reweighting_3_1e5_new",
+    "reweighting_4_1e5_new",
 ]
 
 # Ensure CUDA is available
 print(f"CUDA Available: {torch.cuda.is_available()}")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+
+def batch_process_files(file_list, batch_size, func):
+    results = []
+    for i in range(0, len(file_list), batch_size):
+        batch = file_list[i:i + batch_size]
+        batch_result = func(batch)
+        results.append(batch_result)
+    return np.concatenate(results, axis=0)
 
 
 # Load dataset
@@ -51,7 +64,8 @@ for model_name in models:
         with torch.amp.autocast('cuda'):
             print("Generating embeddings...")
             text_embed = model.get_text_embedding(captions)
-            audio_embed = model.get_audio_embedding_from_filelist(audio_files_paths)
+            # audio_embed = model.get_audio_embedding_from_filelist(audio_files_paths)
+            audio_embed = batch_process_files(audio_files_paths, 128, model.get_audio_embedding_from_filelist)
 
     # print(text_embed.shape, audio_embed.shape)
 
